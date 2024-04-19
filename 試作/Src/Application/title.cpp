@@ -18,9 +18,10 @@ void C_Title::Init()
 
 void C_Title::Draw()
 {
+	SHADER.m_spriteShader.DrawTex(&m_tex[TITLE], nullptr, 1.0f);
 }
 
-void C_Title::Update(POINT a_mouse)
+size_t C_Title::Update(POINT a_mouse)
 {
 	for (size_t l_count = 0; l_count < ALL; l_count++)
 	{
@@ -43,7 +44,7 @@ void C_Title::Update(POINT a_mouse)
 		m_color[START] = StaSelColor;
 		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 		{
-
+			return Screen::Scene::GAME;
 		}
 	}
 	if (m_bFlg[OPTION])
@@ -51,7 +52,8 @@ void C_Title::Update(POINT a_mouse)
 		m_color[OPTION] = OptSelColor;
 		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 		{
-
+			return Screen::Scene::PAUSE;
 		}
 	}
+	return Screen::Scene::INITIAL;
 }

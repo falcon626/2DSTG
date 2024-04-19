@@ -6,4 +6,12 @@ namespace Screen
 	const int Height = 720;
 	const int HalfWidth = Width / 2;
 	const int HalfHeight = Height / 2;
+
+	enum Scene
+	{
+		INITIAL,
+		GAME,
+		PAUSE,
+		RESULT
+	};
 }

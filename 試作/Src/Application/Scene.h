@@ -2,12 +2,19 @@
 //#define DEBUG
 #include "player.h"
 #include "enemy.h"
+class C_Title;
 class Scene
 {
 private:
 	POINT m_mouse;
 	Math::Matrix m_mat;
 	KdTexture m_tex;
+
+	int m_nowScene;
+	std::shared_ptr<C_Title> m_title;
+	KdTexture m_titleTex;
+	KdTexture m_startTex;
+	KdTexture m_optionTex;
 
 
 	KdTexture m_playerTex;
