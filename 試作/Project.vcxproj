@@ -159,6 +159,7 @@
     <ClInclude Include="..\Library\tinygltf\stb_image.h" />
     <ClInclude Include="..\Library\tinygltf\stb_image_write.h" />
     <ClInclude Include="..\Library\tinygltf\tiny_gltf.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Src\Application\back.h" />
     <ClInclude Include="Src\Application\bullet.h" />
     <ClInclude Include="Src\Application\enemy.h" />

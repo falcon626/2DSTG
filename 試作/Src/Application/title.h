@@ -23,9 +23,9 @@ private:
 	std::array<KdTexture*, ALL> m_tex;
 	std::array<Math::Matrix, ALL> m_mat;
 	std::array < Math::Color, ALL > m_color;
-	std::array < Math::Rectangle, ALL > m_rec;
 	std::array < Math::Vector2, ALL > m_pos;
+	std::array < Math::Rectangle, ALL > m_rec;
 	const Math::Color DefColor = { 1.f,1.f,1.f,1.f };
-	const Math::Color OptSelColor = { 1.f,0.2f,0.2f,1.f };
 	const Math::Color StaSelColor = { 0.2f,1.f,1.f,1.f };
+	const Math::Color OptSelColor = { 1.f,0.2f,0.2f,1.f };
 };

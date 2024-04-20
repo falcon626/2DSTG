@@ -32,6 +32,7 @@ bool KdGameWindow::Create(int clientWidth, int clientHeight, const std::string& 
 	wc.lpszMenuName = nullptr;								// メインメニュー名
 	wc.lpszClassName = wndClsName.c_str();					// ウィンドウクラス名
 
+
 	//ウィンドウクラスの登録
 	if (!RegisterClassEx(&wc)) {
 		return false;

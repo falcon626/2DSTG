@@ -48,6 +48,7 @@ void Scene::Update()
 void Scene::Init()
 {
 	m_title = std::make_shared<C_Title>();
+	m_title->Init();
 	m_tex.Load("texture/cursor/cursor.png");
 	m_playerTex.Load("texture/player.png");
 	m_player.Init();

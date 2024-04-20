@@ -156,6 +156,7 @@
     <ClInclude Include="Src\Application\title.h">
       <Filter>Src\Application</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
