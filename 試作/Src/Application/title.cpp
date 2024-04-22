@@ -1,6 +1,9 @@
 #include"title.h"
 #include"Utility.h"
 
+static float RndFunc() noexcept { return static_cast<float>(rand()) / RAND_MAX; }
+float (*Rnd)() = RndFunc;
+
 void C_Title::SetTexture(KdTexture* a_pTitleTex, KdTexture* a_pStartTex, KdTexture* a_pOptionTex)
 {
 	m_tex[TITLE] = a_pTitleTex;
@@ -15,12 +18,15 @@ void C_Title::Init()
 		m_mat[l_count] = Math::Matrix::Identity;
 		m_color[l_count] = DefColor;
 	}
-	m_pos[TITLE]  = { -165, 150 };
-	m_pos[START]  = { 50, -300 };
-	m_pos[OPTION] = { 150, -300 };
-	m_rec[TITLE]  = { 0, 0, 607, 84 };
-	m_rec[START]  = { 0, 0, 500, 500 };
-	m_rec[OPTION] = { 0, 0, 500, 500 };
+	m_pos[TITLE]    = { -330, 300 };
+	m_pos[START]    = { 270, -150 };
+	m_pos[OPTION]   = { 500, -200 };
+	m_rec[TITLE]    = { 0, 0, 607, 84 };
+	m_rec[START]    = { 0, 0, 500, 500 };
+	m_rec[OPTION]   = { 0, 0, 500, 500 };
+	m_scale[TITLE]  = { 1, 1 };
+	m_scale[START]  = { 0.5f, 0.5f };
+	m_scale[OPTION] = { 0.25f, 0.25f };
 }
 
 void C_Title::Draw()
@@ -28,7 +34,7 @@ void C_Title::Draw()
 	for (size_t l_count = NULL; l_count < ALL; l_count++)
 	{
 		SHADER.m_spriteShader.SetMatrix(m_mat[l_count]);
-		SHADER.m_spriteShader.DrawTex(m_tex[l_count], m_pos[l_count].x, m_pos[l_count].y, &m_rec[l_count], &m_color[l_count]);
+		SHADER.m_spriteShader.DrawTex(m_tex[l_count], NULL, NULL, &m_rec[l_count], &m_color[l_count]);
 	}
 }
 
@@ -39,19 +45,22 @@ size_t C_Title::Update(POINT a_mouse)
 		auto x = m_pos[l_count].x - a_mouse.x;
 		auto y = m_pos[l_count].y - a_mouse.y;
 		auto dist = sqrt(x * x + y * y);
-		if (dist <= 50) m_bFlg[l_count] = true;
-		else m_bFlg[l_count] = false;
+		if (dist <= 130 && l_count == START) m_bFlg[START] = true;
+		else m_bFlg[START] = false;
 	}
 	if (m_bFlg[TITLE])
 	{
-		m_pos[TITLE].y += 10;
-		if (m_pos[TITLE].y < 410) m_pos[TITLE].y = 410;
 		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 		{
-
+			if (!m_bKey[TITLE])
+			{
+				m_bKey[TITLE]  = true;
+				m_color[TITLE] = { Rnd(), Rnd(), Rnd(), 1.f };
+			}
 		}
+		else m_bKey[TITLE] = false;
 	}
-	if (m_bFlg[START])
+		if (m_bFlg[START])
 	{
 		m_color[START] = StaSelColor;
 		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
@@ -59,6 +68,7 @@ size_t C_Title::Update(POINT a_mouse)
 			return Screen::Scene::GAME;
 		}
 	}
+	else m_color[START] = DefColor;
 	if (m_bFlg[OPTION])
 	{
 		m_color[OPTION] = OptSelColor;
@@ -67,7 +77,13 @@ size_t C_Title::Update(POINT a_mouse)
 			return Screen::Scene::PAUSE;
 		}
 	}
-	for (size_t l_count = NULL; l_count < ALL; l_count++) m_mat[l_count] = Math::Matrix::CreateTranslation(m_pos[l_count].x, m_pos[l_count].y, NULL);
+	else m_color[OPTION] = DefColor;
+	for (size_t l_count = NULL; l_count < ALL; l_count++) 
+	{
+		m_scaMat[l_count] = Math::Matrix::CreateScale(m_scale[l_count].x, m_scale[l_count].y, NULL);
+		m_traMat[l_count] = Math::Matrix::CreateTranslation(m_pos[l_count].x, m_pos[l_count].y, NULL);
+		m_mat[l_count]    = m_scaMat[l_count] * m_traMat[l_count];
+	}
 
 	return Screen::Scene::INITIAL;
 }

@@ -2,12 +2,14 @@
 #include "Scene.h"
 #include "Utility.h"
 #include "title.h"
+#include "back.h"
 
 void Scene::Draw2D()
 {
 	switch (m_nowScene)
 	{
 	case Screen::Scene::INITIAL:
+		m_back->Draw();
 		m_title->Draw();
 		break;
 	case Screen::Scene::GAME:
@@ -29,6 +31,7 @@ void Scene::Update()
 	switch (m_nowScene)
 	{
 	case Screen::Scene::INITIAL:
+		m_back->Update(m_nowScene);
 		m_nowScene = m_title->Update(m_mouse);
 		break;
 	case Screen::Scene::GAME:
@@ -47,22 +50,32 @@ void Scene::Update()
 
 void Scene::Init()
 {
+	m_tex.Load("texture/cursor/cursor.png");
+
 	m_title = std::make_shared<C_Title>();
 	m_title->Init();
-	m_tex.Load("texture/cursor/cursor.png");
+	m_titleTex.Load("texture/backTexture/title.png");
+	m_startTex.Load("texture/cursor/START.png");
+	m_optionTex.Load("texture/cursor/OPTION.png");
+	m_title->SetTexture(&m_titleTex,&m_startTex,&m_optionTex);
+
+	m_back = std::make_shared<C_Back>();
+	m_back->Init();
+	m_backTex.Load("texture/backTexture/OIG3.png");
+	m_filTex.Load("texture/backTexture/filter.png");
+	m_back->SetTexture(&m_backTex, &m_filTex);
+
 	m_playerTex.Load("texture/player.png");
 	m_player.Init();
 	m_player.SetTexture(&m_playerTex);
+	m_player.SetBulletTextrure(&m_bulletTex);
+	m_player.SetOwner(this);
+
 	m_enemyTex.Load("texture/enemy.png");
 	m_enemy.Init();
-	m_bulletTex.Load("texture/bullet.png");
 	m_enemy.SetTexture(&m_enemyTex);
-	m_player.SetBulletTextrure(&m_bulletTex);
-	m_titleTex.Load("texture/backTexture/title.png");
-	m_startTex.Load("texture/cursor/download.png");
-	m_optionTex.Load("texture/cursor/download.png");
-	m_title->SetTexture(&m_titleTex,&m_startTex,&m_optionTex);
-	m_player.SetOwner(this);
+
+	m_bulletTex.Load("texture/bullet.png");
 }
 
 void Scene::Release()

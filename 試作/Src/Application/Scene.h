@@ -3,6 +3,7 @@
 #include "player.h"
 #include "enemy.h"
 class C_Title;
+class C_Back;
 class Scene
 {
 private:
@@ -15,6 +16,10 @@ private:
 	KdTexture m_titleTex;
 	KdTexture m_startTex;
 	KdTexture m_optionTex;
+
+	std::shared_ptr<C_Back> m_back;
+	KdTexture m_backTex;
+	KdTexture m_filTex;
 
 
 	KdTexture m_playerTex;
