@@ -1,9 +1,10 @@
 #pragma once
-//#define DEBUG
+#define DEBUG
 #include "player.h"
 #include "enemy.h"
 class C_Title;
 class C_Back;
+
 class Scene
 {
 private:
@@ -20,7 +21,6 @@ private:
 	std::shared_ptr<C_Back> m_back;
 	KdTexture m_backTex;
 	KdTexture m_filTex;
-
 
 	KdTexture m_playerTex;
 	C_player m_player;

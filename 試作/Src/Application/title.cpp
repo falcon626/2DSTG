@@ -16,7 +16,7 @@ void C_Title::Init()
 	for (size_t l_count = NULL; l_count < ALL; l_count++)
 	{
 		m_mat[l_count] = Math::Matrix::Identity;
-		m_color[l_count] = DefColor;
+		m_color[l_count] = Def::Color;
 	}
 	m_pos[TITLE]    = { -330, 300 };
 	m_pos[START]    = { 270, -150 };
@@ -45,8 +45,11 @@ size_t C_Title::Update(POINT a_mouse)
 		auto x = m_pos[l_count].x - a_mouse.x;
 		auto y = m_pos[l_count].y - a_mouse.y;
 		auto dist = sqrt(x * x + y * y);
-		if (dist <= 130 && l_count == START) m_bFlg[START] = true;
-		else m_bFlg[START] = false;
+		if (dist <= 65)
+		{
+			m_bFlg[l_count] = true;
+		}
+		else m_bFlg[l_count] = false;
 	}
 	if (m_bFlg[TITLE])
 	{
@@ -60,7 +63,7 @@ size_t C_Title::Update(POINT a_mouse)
 		}
 		else m_bKey[TITLE] = false;
 	}
-		if (m_bFlg[START])
+	if (m_bFlg[START])
 	{
 		m_color[START] = StaSelColor;
 		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
@@ -68,7 +71,7 @@ size_t C_Title::Update(POINT a_mouse)
 			return Screen::Scene::GAME;
 		}
 	}
-	else m_color[START] = DefColor;
+	else m_color[START] = Def::Color;
 	if (m_bFlg[OPTION])
 	{
 		m_color[OPTION] = OptSelColor;
@@ -77,7 +80,7 @@ size_t C_Title::Update(POINT a_mouse)
 			return Screen::Scene::PAUSE;
 		}
 	}
-	else m_color[OPTION] = DefColor;
+	else m_color[OPTION] = Def::Color;
 	for (size_t l_count = NULL; l_count < ALL; l_count++) 
 	{
 		m_scaMat[l_count] = Math::Matrix::CreateScale(m_scale[l_count].x, m_scale[l_count].y, NULL);

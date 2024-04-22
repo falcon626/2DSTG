@@ -9,10 +9,11 @@ void Scene::Draw2D()
 	switch (m_nowScene)
 	{
 	case Screen::Scene::INITIAL:
-		m_back->Draw();
+		m_back->DrawTitle();
 		m_title->Draw();
 		break;
 	case Screen::Scene::GAME:
+		m_back->DrawGame();
 		m_enemy.Draw();
 		m_player.Draw();
 		break;
@@ -31,10 +32,11 @@ void Scene::Update()
 	switch (m_nowScene)
 	{
 	case Screen::Scene::INITIAL:
-		m_back->Update(m_nowScene);
+		m_back->UpdateTitle();
 		m_nowScene = m_title->Update(m_mouse);
 		break;
 	case Screen::Scene::GAME:
+		m_back->UpdateGame();
 		m_player.Update(m_mouse);
 		m_enemy.Update();
 		m_player.CheckHitBullet();
@@ -61,7 +63,7 @@ void Scene::Init()
 
 	m_back = std::make_shared<C_Back>();
 	m_back->Init();
-	m_backTex.Load("texture/backTexture/OIG3.png");
+	m_backTex.Load("texture/backTexture/back.png");
 	m_filTex.Load("texture/backTexture/filter.png");
 	m_back->SetTexture(&m_backTex, &m_filTex);
 
@@ -76,6 +78,9 @@ void Scene::Init()
 	m_enemy.SetTexture(&m_enemyTex);
 
 	m_bulletTex.Load("texture/bullet.png");
+
+	m_player.StartTimer();
+
 }
 
 void Scene::Release()
@@ -95,6 +100,8 @@ void Scene::ImGuiUpdate()
 	if (ImGui::Begin("Debug Window"))
 	{
 		ImGui::Text("FPS : %d", APP.m_fps);
+		ImGui::Text("%d", m_player.Timer());
+		ImGui::Text("%d", m_player.Time());
 	}
 	ImGui::End();
 }

@@ -6,10 +6,14 @@ public:
 
 	void SetTexture(KdTexture* a_pTex, KdTexture* a_pfilTex);
 	void Init();
-	void Draw();
-	void Update(int a_nowScene);
+	
+	void DrawTitle();
+	void UpdateTitle();
+	
+	void DrawGame();
+	void UpdateGame();
 
-	C_Back() {}
+	C_Back();
 	~C_Back() {}
 
 private:
@@ -24,4 +28,8 @@ private:
 	Math::Matrix    m_filmat;
 	Math::Rectangle m_filrec;
 	Math::Color     m_filcolor;
+
+	const Math::Rectangle FullRec;
+	const Math::Vector2 TitleSca;
+	const float FilAlp;
 };

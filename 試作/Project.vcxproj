@@ -166,7 +166,9 @@
     <ClInclude Include="Src\Application\player.h" />
     <ClInclude Include="Src\Application\Scene.h" />
     <ClInclude Include="Src\Application\main.h" />
+    <ClInclude Include="Src\Application\timer.h" />
     <ClInclude Include="Src\Application\title.h" />
+    <ClInclude Include="Src\Application\ui.h" />
     <ClInclude Include="Src\Application\Utility.h" />
     <ClInclude Include="Src\System\Audio\KdAudio.h" />
     <ClInclude Include="src\System\Direct3D\KdDirect3D.h" />
@@ -197,7 +199,9 @@
     <ClCompile Include="Src\Application\player.cpp" />
     <ClCompile Include="Src\Application\Scene.cpp" />
     <ClCompile Include="Src\Application\main.cpp" />
+    <ClCompile Include="Src\Application\timer.cpp" />
     <ClCompile Include="Src\Application\title.cpp" />
+    <ClCompile Include="Src\Application\ui.cpp" />
     <ClCompile Include="Src\System\Audio\KdAudio.cpp" />
     <ClCompile Include="src\System\Direct3D\KdDirect3D.cpp" />
     <ClCompile Include="Src\System\Direct3D\KdDirect3DHelper.cpp" />

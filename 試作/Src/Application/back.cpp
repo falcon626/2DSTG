@@ -1,4 +1,5 @@
 #include "back.h"
+#include "Utility.h"
 
 void C_Back::SetTexture(KdTexture* a_pTex,KdTexture* a_pfilTex)
 {
@@ -8,25 +9,42 @@ void C_Back::SetTexture(KdTexture* a_pTex,KdTexture* a_pfilTex)
 
 void C_Back::Init()
 {
-	m_color    = { 1, 1, 1, 1 };
-	m_rec      = { 0, 150, 1024, 1024 };
-	m_sca      = { 1.5f, 1.5f };
-	m_filcolor = { 1, 1, 1, 0.6f };
-	m_filrec   = { 0, 0, 1280, 720 };
+	m_color    = Def::Color;
+	m_sca      = TitleSca;
+	m_filcolor = Def::Color;
+	m_filcolor.A(FilAlp);
 }
 
-void C_Back::Draw()
+void C_Back::DrawTitle()
 {
 	SHADER.m_spriteShader.SetMatrix(m_mat);
-	SHADER.m_spriteShader.DrawTex(m_pTex, NULL, NULL, &m_rec, &m_color);
+	SHADER.m_spriteShader.DrawTex(m_pTex, Def::Vec.x, Def::Vec.y, &FullRec, &m_color);
 	SHADER.m_spriteShader.SetMatrix(m_filmat);
-	SHADER.m_spriteShader.DrawTex(m_pfilTex, NULL, NULL, &m_filrec, &m_filcolor);
+	SHADER.m_spriteShader.DrawTex(m_pfilTex, Def::Vec.x, Def::Vec.y, &FullRec, &m_filcolor);
 }
 
-void C_Back::Update(int a_nowScene)
+void C_Back::UpdateTitle()
 {
-	auto l_scaMat = Math::Matrix::CreateScale(m_sca.x, m_sca.y, 0);
-	auto l_tarMat = Math::Matrix::CreateTranslation(0,0,0);
+	auto l_scaMat = Math::Matrix::CreateScale(m_sca.x, m_sca.y, Def::Vec.z);
+	auto l_tarMat = Math::Matrix::CreateTranslation(Def::Vec.x, Def::Vec.y, Def::Vec.z);
 	m_mat = l_scaMat * l_tarMat;
-	m_filmat = Math::Matrix::CreateTranslation(0,0,0);
+	m_filmat = Math::Matrix::CreateTranslation(Def::Vec.x, Def::Vec.y, Def::Vec.z);
 }
+
+void C_Back::DrawGame()
+{
+	SHADER.m_spriteShader.SetMatrix(m_mat);
+	SHADER.m_spriteShader.DrawTex(m_pTex, Def::Vec.x, Def::Vec.y, &m_rec, &m_color);
+}
+
+void C_Back::UpdateGame()
+{
+	m_rec = Math::Rectangle(Screen::Width, Def::Vec.y, Screen::Width, Screen::Height);
+	m_mat = Math::Matrix::CreateTranslation(Def::Vec.x, Def::Vec.y, Def::Vec.z);
+}
+
+C_Back::C_Back()
+	:FullRec(Def::Vec.x,Def::Vec.y,Screen::Width,Screen::Height)
+	,TitleSca(1.5f,1.5f)
+	,FilAlp(0.7f)
+{}

@@ -3,8 +3,8 @@
 
 C_Bullet::C_Bullet()
 {
-	m_pos = Math::Vector2(0, 0);
-	m_move = Math::Vector2(0, 0);
+	m_pos = Math::Vector2::Zero;
+	m_move = Math::Vector2::Zero;
 	m_rad = 0.0f;
 	m_bAlive = false;
 	m_mat = Math::Matrix::Identity;
@@ -29,7 +29,7 @@ void C_Bullet::Update(bool a_bTime)
 	m_bUpdate = true;
 	m_pos.x +=cos(m_rad) * m_move.x;
 	m_pos.y +=sin(m_rad) * m_move.y;
-	m_mat = Math::Matrix::CreateTranslation(m_pos.x, m_pos.y, 0);
+	m_mat = Math::Matrix::CreateTranslation(m_pos.x, m_pos.y, Def::Vec.z);
 	if (m_pos.x>=Screen::Width||m_pos.y>=Screen::Height||m_pos.x<=-Screen::Width||m_pos.y<=-Screen::Height)
 	{
 		m_bAlive = false;

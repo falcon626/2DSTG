@@ -1,5 +1,6 @@
 #pragma once
 #include"bullet.h"
+class C_Timer;
 class Scene;
 
 class C_player
@@ -16,28 +17,30 @@ public:
 
 	void CheckHitBullet();
 
-	void PastPosMemory(Math::Vector2& a_pos);
+	void StartTimer();
+	int Timer();
+	int Time();
+	void TimeSum();
 
 	void SetTexture(KdTexture* a_pTex);
 	void SetBulletTextrure(KdTexture* a_pTex);
 	void SetOwner(Scene* a_pOwner);
 
 private:
-	int m_counter;
 	int m_frame;
-	int wait;
-	int arrayNum;
-	static const int PastPosNum = 20;
 	KdTexture* m_pTex;
 	KdTexture* m_pBulletTex;
-	std::array<Math::Vector2, PastPosNum> m_pos;
-	std::array<Math::Vector2, PastPosNum>m_pastPos;
+	Math::Vector2 m_pos;
 	Math::Matrix m_mat;
 	std::vector<C_Bullet*> m_bulletList;
 	Scene* m_pOwner;
+
+	std::shared_ptr<C_Timer> m_timer;
+	bool m_bTimeSun;
+	
 	int m_bulletInterval;
 	int m_maxInterval;
-	int m_reload;
+	int m_time;
 	bool m_bReload;
 	bool m_bTime;
 };

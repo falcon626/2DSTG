@@ -1,10 +1,11 @@
-#include"player.h"
-#include"Scene.h"
+#include "player.h"
+#include "timer.h"
+#include "Scene.h"
 
 C_player::C_player()
 {
-	m_pos[0].x = 0;
-	m_pos[0].y = 0;
+	m_pos.x = 0;
+	m_pos.y = 0;
 	m_mat = Math::Matrix::Identity;
 }
 
@@ -14,45 +15,52 @@ C_player::~C_player()
 }
 void C_player::Init()
 {
-	m_pos[0].x = 0;
-	m_pos[0].y = -150;
+	m_timer = std::make_shared<C_Timer>();
+	m_pos.x = 0;
+	m_pos.y = -150;
 }
 
 void C_player::Update(const POINT a_mouse)
 {
 	if (GetAsyncKeyState(0x41) & 0x8000)
 	{
-		m_pos[0].x -= 10;
+		m_pos.x -= 10;
 		m_bTime = true;
-	} else if (GetAsyncKeyState(0x44) & 0x8000)
+		TimeSum();
+		m_timer->StartTime();
+	}else if (GetAsyncKeyState(0x44) & 0x8000)
 	{
-		m_pos[0].x += 10;
+		m_pos.x += 10;
 		m_bTime = true;
-	}
-	else if (GetAsyncKeyState(0x53) & 0x8000)
+		TimeSum();
+		m_timer->StartTime();
+	}else if (GetAsyncKeyState(0x53) & 0x8000)
 	{
-		m_pos[0].y -= 10;
+		m_pos.y -= 10;
 		m_bTime = true;
-	}
-	else if (GetAsyncKeyState(0x57) & 0x8000)
+		TimeSum();
+		m_timer->StartTime();
+	}else if (GetAsyncKeyState(0x57) & 0x8000)
 	{
-		m_pos[0].y += 10;
+		m_pos.y += 10;
 		m_bTime = true;
-	}
-	else
+		TimeSum();
+		m_timer->StartTime();
+	}else
 	{
+		m_bTimeSun = false;
 		m_bTime = false;
 	}
 	if (GetAsyncKeyState(VK_LBUTTON)&0x8000&&m_bulletInterval<=0)
 	{
 		m_bulletInterval = 30;
-		const float x = a_mouse.x - m_pos[0].x;
-		const float y = a_mouse.y - m_pos[0].y;
+		const float x = a_mouse.x - m_pos.x;
+		const float y = a_mouse.y - m_pos.y;
 		const float radian = atan2(y, x);
 		C_Bullet* tempBullet = new C_Bullet();
 		tempBullet->Init();
 		tempBullet->SetTexture(m_pBulletTex);
-		tempBullet->Shot(m_pos[0], radian);
+		tempBullet->Shot(m_pos, radian);
 		m_bulletList.push_back(tempBullet);
 	}
 	else
@@ -84,7 +92,7 @@ void C_player::Update(const POINT a_mouse)
 		}
 	}
 	m_frame++;
-	m_mat = Math::Matrix::CreateTranslation(m_pos[0].x, m_pos[0].y, 0);
+	m_mat = Math::Matrix::CreateTranslation(m_pos.x, m_pos.y, 0);
 }
 
 void C_player::Draw()
@@ -115,20 +123,26 @@ void C_player::CheckHitBullet()
 	}
 }
 
-void C_player::PastPosMemory(Math::Vector2& a_pos)
+void C_player::StartTimer()
 {
-	static Math::Vector2 prevPos = { 0, 0 };
-	if (m_frame % 30 == 0 && (m_pos[0].x != prevPos.x || m_pos[0].y != prevPos.y)) {
-		if (m_counter < 20) {
-			m_pastPos[m_counter] = m_pos[0];
-			m_counter++;
-			prevPos = m_pos[0];
-		}
-		else
-		{
-			m_counter = 0;
-		}
-	}
+	m_timer->StartTime();
+}
+
+int C_player::Timer()
+{
+	return m_timer->GetElapsedTime();
+}
+
+int C_player::Time()
+{
+	return m_time;
+}
+
+void C_player::TimeSum()
+{
+	if (m_bTimeSun) return;
+	m_time += m_time;
+	m_bTimeSun=true
 }
 
 void C_player::SetTexture(KdTexture* a_pTex)
