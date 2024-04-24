@@ -2,12 +2,20 @@
 class C_Timer
 {
 public:
-	C_Timer(){}
-	~C_Timer(){}
+    C_Timer() : running(false) {}
 
-	void StartTime();
-	int GetElapsedTime();
+    void start();
+
+    void stop();
+
+    void restart();
+
+    void resume();
+
+    int elapsedSeconds();
 
 private:
-	std::chrono::steady_clock::time_point m_startTime;
+    std::chrono::steady_clock::time_point startTime;
+    std::chrono::steady_clock::time_point stopTime;
+    bool running;
 };

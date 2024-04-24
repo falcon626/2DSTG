@@ -27,29 +27,28 @@ void C_player::Update(const POINT a_mouse)
 		m_pos.x -= 10;
 		m_bTime = true;
 		TimeSum();
-		m_timer->StartTime();
+		m_timer->resume();
 	}else if (GetAsyncKeyState(0x44) & 0x8000)
 	{
 		m_pos.x += 10;
 		m_bTime = true;
 		TimeSum();
-		m_timer->StartTime();
+		m_timer->resume();
 	}else if (GetAsyncKeyState(0x53) & 0x8000)
 	{
 		m_pos.y -= 10;
 		m_bTime = true;
 		TimeSum();
-		m_timer->StartTime();
+		m_timer->resume();
 	}else if (GetAsyncKeyState(0x57) & 0x8000)
 	{
 		m_pos.y += 10;
 		m_bTime = true;
 		TimeSum();
-		m_timer->StartTime();
+		m_timer->resume();
 	}else
 	{
-		m_bTimeSun = false;
-		m_bTime = false;
+		m_timer->stop();
 	}
 	if (GetAsyncKeyState(VK_LBUTTON)&0x8000&&m_bulletInterval<=0)
 	{
@@ -125,12 +124,12 @@ void C_player::CheckHitBullet()
 
 void C_player::StartTimer()
 {
-	m_timer->StartTime();
+	m_timer->start();
 }
 
 int C_player::Timer()
 {
-	return m_timer->GetElapsedTime();
+	return m_timer->elapsedSeconds();
 }
 
 int C_player::Time()
@@ -142,7 +141,7 @@ void C_player::TimeSum()
 {
 	if (m_bTimeSun) return;
 	m_time += m_time;
-	m_bTimeSun=true
+	m_bTimeSun = true;
 }
 
 void C_player::SetTexture(KdTexture* a_pTex)
