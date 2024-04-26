@@ -26,7 +26,7 @@ private:
 	KdTexture m_filTex;
 
 	KdTexture m_playerTex;
-	C_player m_player;
+	C_Player m_player;
 	KdTexture m_bulletTex;
 	std::vector<C_Enemy*> m_enemyList;
 	C_Enemy m_enemy;

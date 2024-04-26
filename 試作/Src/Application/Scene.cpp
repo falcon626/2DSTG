@@ -32,7 +32,7 @@ void Scene::Update()
 	switch (m_nowScene)
 	{
 	case Screen::Scene::INITIAL:
-		if (m_bCut)
+		if (!m_bCut)
 		{
 			m_back->UpdateTitle();
 			m_nextScene = m_title->Update(m_mouse);

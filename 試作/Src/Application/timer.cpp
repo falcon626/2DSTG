@@ -1,45 +1,40 @@
 #include "timer.h"
 
-void C_Timer::start()
+void C_Timer::Start()
 {
-    if (!running) {
+    if (!m_bRunning) {
         auto now = std::chrono::steady_clock::now();
-        if (startTime != std::chrono::steady_clock::time_point()) {
-            // àÍéûí‚é~ÇµÇƒÇ¢ÇΩèÍçáÅAåoâﬂéûä‘Çï‚ê≥Ç∑ÇÈ
-            startTime += (now - stopTime);
-        }
-        else {
-            startTime = now;
-        }
-        running = true;
+        if (m_startTime != std::chrono::steady_clock::time_point()) m_startTime += (now - m_stopTime);
+        else m_startTime = now;
+        m_bRunning       = true;
     }
 }
 
-void C_Timer::stop()
+void C_Timer::Stop()
 {
-    if (running) {
-        stopTime = std::chrono::steady_clock::now();
-        running = false;
+    if (m_bRunning) {
+        m_stopTime = std::chrono::steady_clock::now();
+        m_bRunning = false;
     }
 }
 
-void C_Timer::restart()
+void C_Timer::Restart()
 {
-    stop();
-    startTime = std::chrono::steady_clock::now();
-    running = true;
+    Stop();
+    m_startTime = std::chrono::steady_clock::now();
+    m_bRunning  = true;
 }
 
-void C_Timer::resume()
+void C_Timer::Resume()
 {
-    if (!running) {
-        startTime += (std::chrono::steady_clock::now() - stopTime);
-        running = true;
+    if (!m_bRunning) {
+        m_startTime += (std::chrono::steady_clock::now() - m_stopTime);
+        m_bRunning   = true;
     }
 }
 
-int C_Timer::elapsedSeconds()
+int C_Timer::ElapsedSeconds()
 {
-    std::chrono::steady_clock::time_point endTime = running ? std::chrono::steady_clock::now() : stopTime;
-    return std::chrono::duration_cast<std::chrono::seconds>(endTime - startTime).count();
+    std::chrono::steady_clock::time_point endTime = m_bRunning ? std::chrono::steady_clock::now() : m_stopTime;
+    return std::chrono::duration_cast<std::chrono::seconds>(endTime - m_startTime).count();
 }

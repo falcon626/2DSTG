@@ -53,7 +53,7 @@ size_t C_Title::Update(POINT a_mouse)
 	}
 	if (m_bFlg[TITLE])
 	{
-		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+		if (Key::IsPushing(Key::L_Click))
 		{
 			if (!m_bKey[TITLE])
 			{
@@ -66,7 +66,7 @@ size_t C_Title::Update(POINT a_mouse)
 	if (m_bFlg[START])
 	{
 		m_color[START] = StaSelColor;
-		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+		if (Key::IsPushing(Key::L_Click))
 		{
 			return Screen::Scene::GAME;
 		}
@@ -75,7 +75,7 @@ size_t C_Title::Update(POINT a_mouse)
 	if (m_bFlg[OPTION])
 	{
 		m_color[OPTION] = OptSelColor;
-		if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
+		if (Key::IsPushing(Key::L_Click))
 		{
 			return Screen::Scene::PAUSE;
 		}

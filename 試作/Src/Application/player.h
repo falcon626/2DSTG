@@ -3,13 +3,13 @@
 class C_Timer;
 class Scene;
 
-class C_player
+class C_Player
 {
 public:
 
 
-	C_player();
-	~C_player();
+	C_Player();
+	~C_Player();
 
 	void Init();
 	void Update(const POINT a_mouse);

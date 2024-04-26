@@ -162,6 +162,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="Src\Application\back.h" />
     <ClInclude Include="Src\Application\bullet.h" />
+    <ClInclude Include="Src\Application\cloud.h" />
     <ClInclude Include="Src\Application\enemy.h" />
     <ClInclude Include="Src\Application\player.h" />
     <ClInclude Include="Src\Application\Scene.h" />
@@ -195,6 +196,7 @@
     <ClCompile Include="..\Library\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Src\Application\back.cpp" />
     <ClCompile Include="Src\Application\bullet.cpp" />
+    <ClCompile Include="Src\Application\cloud.cpp" />
     <ClCompile Include="Src\Application\enemy.cpp" />
     <ClCompile Include="Src\Application\player.cpp" />
     <ClCompile Include="Src\Application\Scene.cpp" />
