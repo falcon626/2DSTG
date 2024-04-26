@@ -33,7 +33,7 @@ namespace Key
 		L_Click=VK_LBUTTON,R_Click=VK_RBUTTON,Wheel_Click=VK_MBUTTON,
 		Space=VK_SPACE,Enter=VK_RETURN,
 		L_Ctrl=VK_LCONTROL,R_Ctrl=VK_RCONTROL,
-		L_Shift=VK_LSHIFT,R_SHIFT=VK_RSHIFT,
+		L_Shift=VK_LSHIFT,R_Shift=VK_RSHIFT,
 	};
 	static auto IsPushing(Code a_keyCode) noexcept { return (GetAsyncKeyState(a_keyCode) & Code::Constant) != NULL; }
 }

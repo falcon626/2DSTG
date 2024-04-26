@@ -4,6 +4,7 @@
 #include "enemy.h"
 class C_Title;
 class C_Back;
+class C_Cloud;
 
 class Scene
 {
@@ -24,6 +25,9 @@ private:
 	std::shared_ptr<C_Back> m_back;
 	KdTexture m_backTex;
 	KdTexture m_filTex;
+
+	std::shared_ptr<C_Cloud> m_cloud;
+	KdTexture m_cloudTex;
 
 	KdTexture m_playerTex;
 	C_Player m_player;

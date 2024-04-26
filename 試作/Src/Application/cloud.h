@@ -6,18 +6,21 @@ public:
 	~C_Cloud(){}
 
 	void Init();
+	void InitCut();
 	void Draw();
 	void Update();
 	void UpdateCut();
 
+	void SetTex(KdTexture* a_pTex) { m_pTex = a_pTex; }
 	void SetPopFlg(bool a_bFlg) { m_bFlg = a_bFlg; }
 
 private:
+	static const int CloudNum = 1000;
 	KdTexture* m_pTex;
-	Math::Matrix m_mat;
-	Math::Color m_color;
-	Math::Vector2 m_pos;
-	Math::Vector2 m_move;
+	std::array<Math::Matrix, CloudNum>   m_mat;
+	std::array <Math::Color, CloudNum>   m_color;
+	std::array <Math::Vector2, CloudNum> m_scale;
+	std::array <Math::Vector2, CloudNum> m_pos;
+	std::array <Math::Vector2, CloudNum> m_move;
 	bool m_bFlg;
-	float m_scale;
 };

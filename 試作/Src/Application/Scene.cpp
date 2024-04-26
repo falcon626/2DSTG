@@ -3,6 +3,7 @@
 #include "Utility.h"
 #include "title.h"
 #include "back.h"
+#include "cloud.h"
 
 void Scene::Draw2D()
 {
