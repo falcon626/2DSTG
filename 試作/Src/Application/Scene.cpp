@@ -32,8 +32,11 @@ void Scene::Update()
 	switch (m_nowScene)
 	{
 	case Screen::Scene::INITIAL:
-		m_back->UpdateTitle();
-		m_nowScene = m_title->Update(m_mouse);
+		if (m_bCut)
+		{
+			m_back->UpdateTitle();
+			m_nextScene = m_title->Update(m_mouse);
+		}
 		break;
 	case Screen::Scene::GAME:
 		m_back->UpdateGame();
@@ -45,6 +48,12 @@ void Scene::Update()
 		break;
 	case Screen::Scene::RESULT:
 		break;
+	}
+	if (m_nowScene != m_nextScene)m_bCut = true;
+	if (m_bCut)
+	{
+
+		m_cutCount++;
 	}
 
 	m_mat = Math::Matrix::CreateTranslation( m_mouse.x,m_mouse.y , 0);
@@ -80,6 +89,10 @@ void Scene::Init()
 	m_bulletTex.Load("texture/bullet.png");
 
 	m_player.StartTimer();
+
+	m_nowScene = m_nextScene = Screen::Scene::INITIAL;
+	m_cutCount = NULL;
+	m_bCut = false;
 
 }
 

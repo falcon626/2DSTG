@@ -13,6 +13,7 @@ public:
 	const float GetRadius();
 	const bool GetAlive();
 	void Hit();
+	int GetBreakNum();
 
 	void SetTexture(KdTexture* a_ptex);
 
@@ -22,5 +23,6 @@ private:
 	Math::Vector2 m_pos;
 	bool m_eAlive;
 	Math::Vector2 m_move;
+	int m_breakCount;
 	const float TEX_RADIUS = 32.0f;
 };

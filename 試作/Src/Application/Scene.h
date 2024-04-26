@@ -13,6 +13,9 @@ private:
 	KdTexture m_tex;
 
 	int m_nowScene;
+	int m_nextScene;
+	bool m_bCut;
+	int m_cutCount;
 	std::shared_ptr<C_Title> m_title;
 	KdTexture m_titleTex;
 	KdTexture m_startTex;

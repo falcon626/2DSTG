@@ -66,6 +66,12 @@ const bool C_Enemy::GetAlive()
 void C_Enemy::Hit()
 {
 	m_eAlive = false;
+	++m_breakCount;
+}
+
+int C_Enemy::GetBreakNum()
+{
+	return m_breakCount;
 }
 
 void C_Enemy::SetTexture(KdTexture* a_ptex)

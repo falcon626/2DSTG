@@ -48,6 +48,7 @@ void C_player::Update(const POINT a_mouse)
 		m_timer->resume();
 	}else
 	{
+		m_bTime = false;
 		m_timer->stop();
 	}
 	if (GetAsyncKeyState(VK_LBUTTON)&0x8000&&m_bulletInterval<=0)
