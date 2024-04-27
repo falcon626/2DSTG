@@ -23,6 +23,10 @@ void Scene::Draw2D()
 	case Screen::Scene::RESULT:
 		break;
 	}
+	if (m_bCut)
+	{
+		m_cloud->Draw();
+	}
 	SHADER.m_spriteShader.SetMatrix(m_mat);
 	SHADER.m_spriteShader.DrawTex(&m_tex,Math::Rectangle(0,0,16,16),1.f);
 }
@@ -50,14 +54,21 @@ void Scene::Update()
 	case Screen::Scene::RESULT:
 		break;
 	}
-	if (m_nowScene != m_nextScene)m_bCut = true;
+	if (m_nowScene != m_nextScene) m_bCut = true;
 	if (m_bCut)
 	{
-
+		m_cloud->UpdateCut();
+		if (m_cutCount > 60) m_nowScene = m_nextScene;
+		if (m_cutCount > 65)
+		{
+			m_cloud->SetPopFlg(m_bCut);
+			m_bCut = m_cloud->GetAlpFlg();
+		}
 		m_cutCount++;
 	}
+	else m_cutCount = NULL;
 
-	m_mat = Math::Matrix::CreateTranslation( m_mouse.x,m_mouse.y , 0);
+	m_mat = Math::Matrix::CreateTranslation( m_mouse.x,m_mouse.y , Def::Vec.z);
 }
 
 void Scene::Init()
@@ -92,6 +103,10 @@ void Scene::Init()
 	m_player.StartTimer();
 
 	m_nowScene = m_nextScene = Screen::Scene::INITIAL;
+	m_cloud = std::make_shared<C_Cloud>();
+	m_cloudTex.Load("texture/backTexture/cloud_9.png");
+	m_cloud->SetTex(&m_cloudTex);
+	m_cloud->InitCut();
 	m_cutCount = NULL;
 	m_bCut = false;
 
@@ -115,7 +130,6 @@ void Scene::ImGuiUpdate()
 	{
 		ImGui::Text("FPS : %d", APP.m_fps);
 		ImGui::Text("%d", m_player.Timer());
-		ImGui::Text("%d", m_player.Time());
 	}
 	ImGui::End();
 }

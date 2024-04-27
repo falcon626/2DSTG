@@ -11,9 +11,8 @@ C_Player::C_Player()
 }
 
 C_Player::~C_Player()
-{
-	
-}
+{}
+
 void C_Player::Init()
 {
 	m_timer = std::make_shared<C_Timer>();
@@ -25,27 +24,31 @@ void C_Player::Update(const POINT a_mouse)
 {
 	if (Key::IsPushing(Key::A))
 	{
-		m_pos.x -= 10;
+		if (Key::IsPushing(Key::L_Shift)) m_move.x = SlowSpd;
+		else m_move.x = NormalSpd;
+		m_pos.x -= m_move.x;
 		m_bTime = true;
-		TimeSum();
 		m_timer->Resume();
 	}else if (Key::IsPushing(Key::D))
 	{
-		m_pos.x += 10;
+		if (Key::IsPushing(Key::L_Shift)) m_move.x = SlowSpd;
+		else m_move.x = NormalSpd;
+		m_pos.x += m_move.x;
 		m_bTime = true;
-		TimeSum();
 		m_timer->Resume();
 	}else if (Key::IsPushing(Key::S))
 	{
-		m_pos.y -= 10;
+		if (Key::IsPushing(Key::L_Shift)) m_move.y = SlowSpd;
+		else m_move.y = NormalSpd;
+		m_pos.y -= m_move.y;
 		m_bTime = true;
-		TimeSum();
 		m_timer->Resume();
 	}else if (Key::IsPushing(Key::W))
 	{
-		m_pos.y += 10;
+		if (Key::IsPushing(Key::L_Shift)) m_move.y = SlowSpd;
+		else m_move.y = NormalSpd;
+		m_pos.y += m_move.y;
 		m_bTime = true;
-		TimeSum();
 		m_timer->Resume();
 	}else
 	{
@@ -62,10 +65,10 @@ void C_Player::Update(const POINT a_mouse)
 		tempBullet->Init();
 		tempBullet->SetTexture(m_pBulletTex);
 		tempBullet->Shot(m_pos, radian);
-		m_bulletList.push_back(tempBullet);
+		m_bulletList.emplace_back(tempBullet);
 	}
 	else m_bulletInterval--;
-	if (GetAsyncKeyState(VK_RBUTTON) & 0x8000)
+	if (Key::IsPushing(Key::R_Click))
 	{
 
 	}
@@ -84,24 +87,24 @@ void C_Player::Update(const POINT a_mouse)
 		else it++;
 	}
 	m_frame++;
-	m_mat = Math::Matrix::CreateTranslation(m_pos.x, m_pos.y, 0);
+	m_mat = Math::Matrix::CreateTranslation(m_pos.x, m_pos.y, Def::Vec.z);
 }
 
 void C_Player::Draw()
 {
-	for (int b = 0; b < m_bulletList.size(); b++)
+	for (int b = 0; b < m_bulletList.size(); ++b)
 	{
 		m_bulletList[b]->Draw();
 	}
 	SHADER.m_spriteShader.SetMatrix(m_mat);
-	SHADER.m_spriteShader.DrawTex(m_pTex, Math::Rectangle(0, 0, 64, 64), 1.0f);
+	SHADER.m_spriteShader.DrawTex(m_pTex, Math::Rectangle(0, 0, 64, 64), Def::Color.A());
 }
 
 void C_Player::CheckHitBullet()
 {
 	auto enemy = m_pOwner->GetEnemy();
 	if (!enemy->GetAlive())return;
-	for (size_t b = 0; b < m_bulletList.size(); b++)
+	for (size_t b = 0; b < m_bulletList.size(); ++b)
 	{
 		const auto x = enemy->GetPos().x-m_bulletList[b]->GetPos().x;
 		const auto y = enemy->GetPos().y-m_bulletList[b]->GetPos().y;
@@ -123,18 +126,6 @@ void C_Player::StartTimer()
 int C_Player::Timer()
 {
 	return m_timer->ElapsedSeconds();
-}
-
-int C_Player::Time()
-{
-	return m_time;
-}
-
-void C_Player::TimeSum()
-{
-	if (m_bTimeSun) return;
-	m_time += m_time;
-	m_bTimeSun = true;
 }
 
 void C_Player::SetTexture(KdTexture* a_pTex)

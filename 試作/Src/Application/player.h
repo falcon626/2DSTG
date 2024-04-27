@@ -19,8 +19,6 @@ public:
 
 	void StartTimer();
 	int Timer();
-	int Time();
-	void TimeSum();
 
 	void SetTexture(KdTexture* a_pTex);
 	void SetBulletTextrure(KdTexture* a_pTex);
@@ -31,16 +29,20 @@ private:
 	KdTexture* m_pTex;
 	KdTexture* m_pBulletTex;
 	Math::Vector2 m_pos;
+	Math::Vector2 m_move;
 	Math::Matrix m_mat;
 	std::vector<C_Bullet*> m_bulletList;
 	Scene* m_pOwner;
 
 	std::shared_ptr<C_Timer> m_timer;
 	bool m_bTimeSun;
-	
+
 	int m_bulletInterval;
 	int m_maxInterval;
 	int m_time;
 	bool m_bReload;
 	bool m_bTime;
+
+	const float NormalSpd = 10.0f;
+	const float SlowSpd = 5.0f;
 };
