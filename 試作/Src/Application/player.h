@@ -44,5 +44,5 @@ private:
 	bool m_bTime;
 
 	const float NormalSpd = 10.0f;
-	const float SlowSpd = 5.0f;
+	const float SlowSpd = 3.0f;
 };

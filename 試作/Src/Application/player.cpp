@@ -55,6 +55,10 @@ void C_Player::Update(const POINT a_mouse)
 		m_bTime = false;
 		m_timer->Stop();
 	}
+	if (m_pos.x <= -Screen::HalfWidth)m_pos.x  = -Screen::HalfWidth;
+	if (m_pos.x >=  Screen::HalfWidth)m_pos.x  =  Screen::HalfWidth;
+	if (m_pos.y <= -Screen::HalfHeight)m_pos.y = -Screen::HalfHeight;
+	if (m_pos.y >=  Screen::HalfHeight)m_pos.y =  Screen::HalfHeight;
 	if (Key::IsPushing(Key::L_Click) && m_bulletInterval <= 0)
 	{
 		m_bulletInterval = 30;
@@ -68,10 +72,21 @@ void C_Player::Update(const POINT a_mouse)
 		m_bulletList.emplace_back(tempBullet);
 	}
 	else m_bulletInterval--;
-	if (Key::IsPushing(Key::R_Click))
-	{
 
+	if (Key::IsPushing(Key::R_Click) && m_bulletInterval <= 0)
+	{
+		//	m_bulletInterval = 30;
+		//	const float x = a_mouse.x - m_pos.x;
+		//	const float y = a_mouse.y - m_pos.y;
+		//	const float radian = atan2(y, x);
+		//	C_Bullet* tempBullet = new C_Bullet();
+		//	tempBullet->Init();
+		//	tempBullet->SetTexture(m_pBulletTex);
+		//	tempBullet->Shot(m_pos, radian);
+		//	m_bulletList.emplace_back(tempBullet);
 	}
+	//else m_bulletInterval--;
+
 	for (int b = 0; b < m_bulletList.size(); b++) m_bulletList[b]->Update(m_bTime);
 
 	std::vector<C_Bullet*>::iterator it;

@@ -15,6 +15,7 @@ void Scene::Draw2D()
 		break;
 	case Screen::Scene::GAME:
 		m_back->DrawGame();
+		m_cloud->Draw();
 		m_enemy.Draw();
 		m_player.Draw();
 		break;
@@ -23,10 +24,7 @@ void Scene::Draw2D()
 	case Screen::Scene::RESULT:
 		break;
 	}
-	if (m_bCut)
-	{
-		m_cloud->Draw();
-	}
+	if (m_bCut) m_cut->DrawCut();
 	SHADER.m_spriteShader.SetMatrix(m_mat);
 	SHADER.m_spriteShader.DrawTex(&m_tex,Math::Rectangle(0,0,16,16),1.f);
 }
@@ -45,6 +43,7 @@ void Scene::Update()
 		break;
 	case Screen::Scene::GAME:
 		m_back->UpdateGame();
+		m_cloud->Update();
 		m_player.Update(m_mouse);
 		m_enemy.Update();
 		m_player.CheckHitBullet();
@@ -57,12 +56,12 @@ void Scene::Update()
 	if (m_nowScene != m_nextScene) m_bCut = true;
 	if (m_bCut)
 	{
-		m_cloud->UpdateCut();
-		if (m_cutCount > 60) m_nowScene = m_nextScene;
-		if (m_cutCount > 65)
+		m_cut->UpdateCut();
+		if (m_cutCount > SceneSwitchCount) m_nowScene = m_nextScene;
+		if (m_cutCount > SceneCutEndCount)
 		{
-			m_cloud->SetPopFlg(m_bCut);
-			m_bCut = m_cloud->GetAlpFlg();
+			m_cut->SetPopFlg(m_bCut);
+			m_bCut = m_cut->GetAlpFlg();
 		}
 		m_cutCount++;
 	}
@@ -75,49 +74,56 @@ void Scene::Init()
 {
 	m_tex.Load("texture/cursor/cursor.png");
 
-	m_title = std::make_shared<C_Title>();
+	m_title = std::make_unique<C_Title>();
 	m_title->Init();
 	m_titleTex.Load("texture/backTexture/title.png");
 	m_startTex.Load("texture/cursor/START.png");
 	m_optionTex.Load("texture/cursor/OPTION.png");
 	m_title->SetTexture(&m_titleTex,&m_startTex,&m_optionTex);
 
-	m_back = std::make_shared<C_Back>();
+	m_back = std::make_unique<C_Back>();
 	m_back->Init();
 	m_backTex.Load("texture/backTexture/back.png");
 	m_filTex.Load("texture/backTexture/filter.png");
 	m_back->SetTexture(&m_backTex, &m_filTex);
 
-	m_playerTex.Load("texture/player.png");
+	m_playerTex.Load("texture/fly.png");
 	m_player.Init();
 	m_player.SetTexture(&m_playerTex);
 	m_player.SetBulletTextrure(&m_bulletTex);
 	m_player.SetOwner(this);
 
-	m_enemyTex.Load("texture/enemy.png");
+	m_enemyTex.Load("texture/flyObj.png");
 	m_enemy.Init();
 	m_enemy.SetTexture(&m_enemyTex);
 
-	m_bulletTex.Load("texture/bullet.png");
+	m_bulletTex.Load("texture/nc.png");
 
 	m_player.StartTimer();
 
 	m_nowScene = m_nextScene = Screen::Scene::INITIAL;
-	m_cloud = std::make_shared<C_Cloud>();
+	m_cut = std::make_unique<C_Cloud>();
 	m_cloudTex.Load("texture/backTexture/cloud_9.png");
-	m_cloud->SetTex(&m_cloudTex);
-	m_cloud->InitCut();
+	m_cut->SetTex(&m_cloudTex);
+	m_cut->InitCut();
 	m_cutCount = NULL;
 	m_bCut = false;
+
+	m_cloud = std::make_unique<C_Cloud>();
+	m_cloud->SetTex(&m_cloudTex);
+	m_cloud->Init();
+
 
 }
 
 void Scene::Release()
 {
-	m_tex.Release();
+	m_tex.      Release();
 	m_playerTex.Release();
 	m_bulletTex.Release();
-	m_enemyTex.Release();
+	m_enemyTex. Release();
+	m_cloudTex. Release();
+	m_backTex.  Release();
 }
 
 void Scene::ImGuiUpdate()
@@ -130,6 +136,7 @@ void Scene::ImGuiUpdate()
 	{
 		ImGui::Text("FPS : %d", APP.m_fps);
 		ImGui::Text("%d", m_player.Timer());
+		ImGui::Text("%d", m_enemy.GetBreakNum());
 	}
 	ImGui::End();
 }

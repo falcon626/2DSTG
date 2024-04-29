@@ -8,6 +8,7 @@ public:
 	void Init();
 	void InitCut();
 	void Draw();
+	void DrawCut();
 	void Update();
 	void UpdateCut();
 
@@ -20,9 +21,15 @@ private:
 	static const int CloudNum = 250;
 	const float AlpSpd;
 	const float AlpBorder;
+	const float AlpBack;
 	const float ScaSpd;
 	const int TexRadi;
+	const int BackCloudNum;
+	const int BackCloudSizMax;
+	const int BackCloudSizMin;
 	const int CloudPatternNum;
+	const int CloudSpdMax;
+	const int CloudSpdMin;
 	KdTexture* m_pTex;
 	std::array<Math::Matrix, CloudNum>   m_mat;
 	std::array <Math::Color, CloudNum>   m_color;

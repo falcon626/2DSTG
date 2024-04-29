@@ -25,4 +25,5 @@ private:
 	Math::Vector2 m_move;
 	int m_breakCount;
 	const float TEX_RADIUS = 32.0f;
+	const int TEX_SIZE = 64;
 };

@@ -27,8 +27,8 @@ void C_Bullet::Update(bool a_bTime)
 {
 	if (!m_bAlive || !a_bTime)return;
 	m_bUpdate = true;
-	m_pos.x +=cos(m_rad) * m_move.x;
-	m_pos.y +=sin(m_rad) * m_move.y;
+	m_pos.x += cos(m_rad) * m_move.x;
+	m_pos.y += sin(m_rad) * m_move.y;
 	m_mat = Math::Matrix::CreateTranslation(m_pos.x, m_pos.y, Def::Vec.z);
 	if (m_pos.x>=Screen::Width||m_pos.y>=Screen::Height||m_pos.x<=-Screen::Width||m_pos.y<=-Screen::Height)
 	{

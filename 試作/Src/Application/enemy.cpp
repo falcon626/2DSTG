@@ -38,14 +38,14 @@ void C_Enemy::Update()
 	{
 		m_eAlive = false;
 	}
-	m_mat = Math::Matrix::CreateTranslation(m_pos.x, m_pos.y, 0);
+	m_mat = Math::Matrix::CreateTranslation(m_pos.x, m_pos.y, Def::Vec.z);
 }
 
 void C_Enemy::Draw()
 {
 	if (!m_eAlive)return;
 	SHADER.m_spriteShader.SetMatrix(m_mat);
-	SHADER.m_spriteShader.DrawTex(m_pTex, Math::Rectangle(0, 0, 64, 64), 1.0f);
+	SHADER.m_spriteShader.DrawTex(m_pTex, Math::Rectangle(Def::Vec.x, Def::Vec.y, TEX_SIZE, TEX_SIZE), Def::Color.A());
 }
 
 const Math::Vector2 C_Enemy::GetPos()

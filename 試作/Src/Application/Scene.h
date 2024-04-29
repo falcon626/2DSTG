@@ -26,8 +26,12 @@ private:
 	KdTexture m_backTex;
 	KdTexture m_filTex;
 
+	std::shared_ptr<C_Cloud> m_cut;
 	std::shared_ptr<C_Cloud> m_cloud;
 	KdTexture m_cloudTex;
+
+	const int SceneSwitchCount = 60;
+	const int SceneCutEndCount = 65;
 
 	KdTexture m_playerTex;
 	C_Player m_player;
