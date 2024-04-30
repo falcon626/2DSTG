@@ -18,6 +18,7 @@ void Scene::Draw2D()
 		m_cloud->Draw();
 		m_enemy.Draw();
 		m_player.Draw();
+		m_cloud->Draw();
 		break;
 	case Screen::Scene::PAUSE:
 		break;

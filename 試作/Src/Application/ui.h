@@ -7,8 +7,8 @@ public:
 	~C_Ui() {}
 
 	void Init();
-	void Draw();
-	void Update();
+	void DrawExplanation();
+	void UpdateExplanation();
 
 	void SetTex(KdTexture* a_pTex) { m_pTex = a_pTex; }
 
@@ -20,10 +20,29 @@ private:
 		Explanation,
 		All
 	};
+	enum Numbers
+	{
+		One,
+		Two,
+		Three,
+		Four,
+		Five,
+		Six,
+		Seven,
+		Eight,
+		Nine,
+		Zero,
+		Max
+	};
  	KdTexture* m_pTex;
-	std::array<Math::Vector2, All> m_pos;
-	std::array<Math::Matrix, All> m_mat;
-	std::array < Math::Color , All > m_color;
-	std::array < Math::Rectangle , All > m_rec;
+	std::array<Math::Vector2, Ui::All> m_pos;
+	std::array<Math::Vector2, Ui::All> m_scal;
+	std::array<Math::Matrix, Ui::All> m_mat;
+	std::array < Math::Color , Ui::All > m_color;
+	std::array < Math::Rectangle , Ui::All > m_rec;
+	Math::Vector2 m_timerRec;
 	const float AlpCrr = 0.25f;
+	const float ScalCrr = 0.25f;
+	const int HpTexRad = 720;
+	const Math::Vector2 TimerTexRad = { 45,95 };
 };
