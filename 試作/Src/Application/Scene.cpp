@@ -4,6 +4,7 @@
 #include "title.h"
 #include "back.h"
 #include "cloud.h"
+#include "ui.h"
 
 void Scene::Draw2D()
 {
@@ -15,10 +16,19 @@ void Scene::Draw2D()
 		break;
 	case Screen::Scene::GAME:
 		m_back->DrawGame();
-		m_cloud->Draw();
-		m_enemy.Draw();
-		m_player.Draw();
-		m_cloud->Draw();
+		if (!m_explFlg) m_ui->DrawExplanation();
+		else
+		{
+			if (m_directorCount > 30)
+			{
+				m_cloud->Draw();
+			}
+			if (m_directorCount > 60)
+			{
+				for (decltype(auto) l_eneLis : m_enemyList) l_eneLis->Draw();
+				m_player.Draw();
+			}
+		}
 		break;
 	case Screen::Scene::PAUSE:
 		break;
@@ -44,16 +54,32 @@ void Scene::Update()
 		break;
 	case Screen::Scene::GAME:
 		m_back->UpdateGame();
-		m_cloud->Update();
-		m_player.Update(m_mouse);
-		m_enemy.Update();
-		m_player.CheckHitBullet();
+		if (!m_explFlg) m_explFlg = m_ui->UpdateExplanation();
+		else
+		{
+			m_directorCount++;
+			if (m_directorCount > Def::AnNull)
+			{
+				m_cloud->MatrixSet();
+				m_player.MatrixSet();
+				for (decltype(auto) l_eneLis : m_enemyList) l_eneLis->MatrixSet();
+			}
+			if (m_directorCount > 120)
+			{
+				m_cloud->Update();
+				m_player.Update(m_mouse);
+				for (decltype(auto) l_eneLis : m_enemyList) l_eneLis->Update();
+				UpdateGame();
+				m_player.CheckHitBullet();
+			}
+		}
 		break;
 	case Screen::Scene::PAUSE:
 		break;
 	case Screen::Scene::RESULT:
 		break;
 	}
+
 	if (m_nowScene != m_nextScene) m_bCut = true;
 	if (m_bCut)
 	{
@@ -69,6 +95,28 @@ void Scene::Update()
 	else m_cutCount = NULL;
 
 	m_mat = Math::Matrix::CreateTranslation( m_mouse.x,m_mouse.y , Def::Vec.z);
+}
+
+void Scene::UpdateGame()
+{
+	auto it = m_enemyList.begin();
+
+	while (it != m_enemyList.end())
+	{
+		if ((*it)->GetAlive() == false) it = m_enemyList.erase(it);
+		else it++;
+	}
+
+	if (rand() % 100 < 3)
+	{
+		std::shared_ptr<C_Enemy> enemy;
+		enemy = std::make_shared<C_Enemy>();
+
+		enemy->Init();
+		enemy->SetTexture(&m_enemyTex);
+
+		m_enemyList.emplace_back(enemy);
+	}
 }
 
 void Scene::Init()
@@ -95,8 +143,6 @@ void Scene::Init()
 	m_player.SetOwner(this);
 
 	m_enemyTex.Load("texture/flyObj.png");
-	m_enemy.Init();
-	m_enemy.SetTexture(&m_enemyTex);
 
 	m_bulletTex.Load("texture/nc.png");
 
@@ -114,6 +160,12 @@ void Scene::Init()
 	m_cloud->SetTex(&m_cloudTex);
 	m_cloud->Init();
 
+	m_ui = std::make_unique<C_Ui>();
+	m_explTex.Load("texture/cursor/CUI.png");
+	m_lClickTex.Load("texture/ClickUi.png");
+	m_ui->SetTex(&m_explTex, &m_lClickTex);
+	m_ui->Init();
+	m_explFlg = false;
 
 }
 
@@ -137,7 +189,7 @@ void Scene::ImGuiUpdate()
 	{
 		ImGui::Text("FPS : %d", APP.m_fps);
 		ImGui::Text("%d", m_player.Timer());
-		ImGui::Text("%d", m_enemy.GetBreakNum());
+		ImGui::Text("%d", m_player.GetBreakNum());
 	}
 	ImGui::End();
 }
@@ -151,7 +203,7 @@ void Scene::CalcMousePos()
 	m_mouse.y *= -1;
 }
 
-C_Enemy* Scene::GetEnemy()
+std::vector<std::shared_ptr<C_Enemy>> Scene::GetEnemyList()
 {
-	return &m_enemy;
+	return m_enemyList;
 }

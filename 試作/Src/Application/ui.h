@@ -8,9 +8,9 @@ public:
 
 	void Init();
 	void DrawExplanation();
-	void UpdateExplanation();
+	bool UpdateExplanation();
 
-	void SetTex(KdTexture* a_pTex) { m_pTex = a_pTex; }
+	void SetTex(KdTexture* a_pTex, KdTexture* a_plClickTex);
 
 private:
 	enum Ui
@@ -18,6 +18,7 @@ private:
 		Hp,
 		Timer,
 		Explanation,
+		Lclick,
 		All
 	};
 	enum Numbers
@@ -35,14 +36,25 @@ private:
 		Max
 	};
  	KdTexture* m_pTex;
+ 	KdTexture* m_plClickTex;
 	std::array<Math::Vector2, Ui::All> m_pos;
 	std::array<Math::Vector2, Ui::All> m_scal;
 	std::array<Math::Matrix, Ui::All> m_mat;
 	std::array < Math::Color , Ui::All > m_color;
 	std::array < Math::Rectangle , Ui::All > m_rec;
 	Math::Vector2 m_timerRec;
-	const float AlpCrr = 0.25f;
-	const float ScalCrr = 0.25f;
+	int m_frame;
+	float m_redChanger;
+	float m_colorChanger;
+	const int FrameLimit = 10;
+	const float AlpCrr = 0.50f;
+	const float ScalExplCrr = 1.2f;
+	const float ScalLcliCrr = 0.7f;
+	const float ColorChanger = 0.05f;
 	const int HpTexRad = 720;
+	const int LclickTexW = 384;
+	const int LclickTexH = 106;
+	const Math::Vector2 LclickPos = { 250,-185 };
 	const Math::Vector2 TimerTexRad = { 45,95 };
+	const Math::Color DefLclickColor = { 0,0,0,AlpCrr };
 };

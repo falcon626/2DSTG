@@ -113,3 +113,13 @@ void C_Cloud::UpdateCut()
 		m_mat[l_i]    = l_scaMat * l_tarMat;
 	}
 }
+
+void C_Cloud::MatrixSet()
+{
+	for (size_t l_i = NULL; l_i < CloudNum / BackCloudNum; ++l_i)
+	{
+		auto l_tarMat = Math::Matrix::CreateTranslation(m_pos[l_i].x, m_pos[l_i].y, Def::Vec.z);
+		auto l_scaMat = Math::Matrix::CreateScale(m_scale[l_i].x);
+		m_mat[l_i] = l_scaMat * l_tarMat;
+	}
+}

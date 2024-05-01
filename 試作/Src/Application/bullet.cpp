@@ -25,7 +25,7 @@ void C_Bullet::Init()
 
 void C_Bullet::Update(bool a_bTime)
 {
-	if (!m_bAlive || !a_bTime)return;
+	if (!m_bAlive || !a_bTime) return;
 	m_bUpdate = true;
 	m_pos.x += cos(m_rad) * m_move.x;
 	m_pos.y += sin(m_rad) * m_move.y;

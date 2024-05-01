@@ -20,9 +20,13 @@ public:
 	void StartTimer();
 	int Timer();
 
+	void MatrixSet();
+
 	void SetTexture(KdTexture* a_pTex);
 	void SetBulletTextrure(KdTexture* a_pTex);
 	void SetOwner(Scene* a_pOwner);
+
+	int GetBreakNum() const { return m_breakCount; }
 
 private:
 	int m_frame;
@@ -37,6 +41,7 @@ private:
 	std::shared_ptr<C_Timer> m_timer;
 	bool m_bTimeSun;
 
+	int m_breakCount;
 	int m_bulletInterval;
 	int m_maxInterval;
 	int m_time;

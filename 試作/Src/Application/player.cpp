@@ -6,7 +6,7 @@
 C_Player::C_Player()
 {
 	m_pos.x = 0;
-	m_pos.y = 0;
+	m_pos.y = -150;
 	m_mat = Math::Matrix::Identity;
 }
 
@@ -107,7 +107,7 @@ void C_Player::Update(const POINT a_mouse)
 
 void C_Player::Draw()
 {
-	for (int b = 0; b < m_bulletList.size(); ++b)
+	for (int b = NULL; b < m_bulletList.size(); ++b)
 	{
 		m_bulletList[b]->Draw();
 	}
@@ -117,18 +117,22 @@ void C_Player::Draw()
 
 void C_Player::CheckHitBullet()
 {
-	auto enemy = m_pOwner->GetEnemy();
-	if (!enemy->GetAlive())return;
-	for (size_t b = 0; b < m_bulletList.size(); ++b)
+	auto l_enemy = m_pOwner->GetEnemyList();
+	for (decltype(auto) l_eneLis : l_enemy)
 	{
-		const auto x = enemy->GetPos().x-m_bulletList[b]->GetPos().x;
-		const auto y = enemy->GetPos().y-m_bulletList[b]->GetPos().y;
-		const auto z = sqrt(x * x + y * y);
-		const auto hitDist = enemy->GetRadius() + m_bulletList[b]->GetRadius();
-		if (z < hitDist)
+		if (!l_eneLis->GetAlive())continue;
+		for (size_t b = 0; b < m_bulletList.size(); ++b)
 		{
-			enemy->Hit();
-			m_bulletList[b]->Hit();
+			const auto x = l_eneLis->GetPos().x - m_bulletList[b]->GetPos().x;
+			const auto y = l_eneLis->GetPos().y - m_bulletList[b]->GetPos().y;
+			const auto z = sqrt(x * x + y * y);
+			const auto hitDist = l_eneLis->GetRadius() + m_bulletList[b]->GetRadius();
+			if (z < hitDist)
+			{
+				l_eneLis->Hit();
+				m_bulletList[b]->Hit();
+				++m_breakCount;
+			}
 		}
 	}
 }
@@ -141,6 +145,13 @@ void C_Player::StartTimer()
 int C_Player::Timer()
 {
 	return m_timer->ElapsedSeconds();
+}
+
+void C_Player::MatrixSet()
+{
+	m_mat = Math::Matrix::CreateTranslation(m_pos.x, m_pos.y, Def::Vec.z);
+	SHADER.m_spriteShader.SetMatrix(m_mat);
+	SHADER.m_spriteShader.DrawTex(m_pTex, Math::Rectangle(0, 0, 64, 64), Def::Color.A());
 }
 
 void C_Player::SetTexture(KdTexture* a_pTex)

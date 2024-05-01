@@ -34,7 +34,7 @@ void C_Enemy::Update()
 	}
 	if (!m_eAlive)return;
 	m_pos -= m_move;
-	if (m_pos.y <= -Screen::HalfHeight)
+	if (m_pos.y <= -Screen::HalfHeight - TEX_RADIUS)
 	{
 		m_eAlive = false;
 	}
@@ -66,12 +66,12 @@ const bool C_Enemy::GetAlive()
 void C_Enemy::Hit()
 {
 	m_eAlive = false;
-	++m_breakCount;
 }
 
-int C_Enemy::GetBreakNum()
+void C_Enemy::MatrixSet()
 {
-	return m_breakCount;
+	SHADER.m_spriteShader.SetMatrix(m_mat);
+	SHADER.m_spriteShader.DrawTex(m_pTex, Math::Rectangle(Def::Vec.x, Def::Vec.y, TEX_SIZE, TEX_SIZE), Def::Color.A());
 }
 
 void C_Enemy::SetTexture(KdTexture* a_ptex)

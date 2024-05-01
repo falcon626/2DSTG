@@ -5,6 +5,7 @@
 class C_Title;
 class C_Back;
 class C_Cloud;
+class C_Ui;
 
 class Scene
 {
@@ -33,11 +34,16 @@ private:
 	const int SceneSwitchCount = 60;
 	const int SceneCutEndCount = 65;
 
+	std::shared_ptr<C_Ui> m_ui;
+	KdTexture m_explTex;
+	KdTexture m_lClickTex;
+	bool m_explFlg = false;
+	int m_directorCount;
+
 	KdTexture m_playerTex;
 	C_Player m_player;
 	KdTexture m_bulletTex;
-	std::vector<C_Enemy*> m_enemyList;
-	C_Enemy m_enemy;
+	std::vector<std::shared_ptr<C_Enemy>> m_enemyList;
 	KdTexture m_enemyTex;
 public:
 
@@ -47,13 +53,15 @@ public:
 
 	void Update();
 
+	void UpdateGame();
+
 	void Draw2D();
 
 	void ImGuiUpdate();
 
 	void CalcMousePos();
 
-	C_Enemy* GetEnemy();
+	std::vector<std::shared_ptr<C_Enemy>> GetEnemyList();
 
 private:
 

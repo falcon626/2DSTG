@@ -12,6 +12,8 @@ public:
 	void Update();
 	void UpdateCut();
 
+	void MatrixSet();
+
 	void SetTex(KdTexture* a_pTex) { m_pTex = a_pTex; }
 	void SetPopFlg(bool a_bFlg) { m_bFlg = a_bFlg; }
 
