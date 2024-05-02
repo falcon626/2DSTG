@@ -27,6 +27,11 @@ void Scene::Draw2D()
 			{
 				for (decltype(auto) l_eneLis : m_enemyList) l_eneLis->Draw();
 				m_player.Draw();
+				m_ui->DrawTimer();
+			}
+			if (m_bUpdateFlg)
+			{
+				m_ui->DrawHp();
 			}
 		}
 		break;
@@ -58,18 +63,21 @@ void Scene::Update()
 		else
 		{
 			m_directorCount++;
-			if (m_directorCount > Def::AnNull)
+			if (m_directorCount == Def::AnNull)
 			{
 				m_cloud->MatrixSet();
 				m_player.MatrixSet();
-				for (decltype(auto) l_eneLis : m_enemyList) l_eneLis->MatrixSet();
+				EnemyPop();
 			}
-			if (m_directorCount > 120)
+			if (m_directorCount > 120) m_bUpdateFlg = true;
+			if (m_bUpdateFlg)
 			{
 				m_cloud->Update();
+				m_ui->UpdateTimer();
+				m_ui->UpdateHp();
 				m_player.Update(m_mouse);
-				for (decltype(auto) l_eneLis : m_enemyList) l_eneLis->Update();
 				UpdateGame();
+				for (decltype(auto) l_eneLis : m_enemyList) l_eneLis->Update();
 				m_player.CheckHitBullet();
 			}
 		}
@@ -99,6 +107,28 @@ void Scene::Update()
 
 void Scene::UpdateGame()
 {
+	//auto it = m_enemyList.begin();
+
+	//while (it != m_enemyList.end())
+	//{
+	//	if ((*it)->GetAlive() == false) it = m_enemyList.erase(it);
+	//	else it++;
+	//}
+
+	//if (rand() % 100 < 1)
+	//{
+	//	std::shared_ptr<C_Enemy> enemy;
+	//	enemy = std::make_shared<C_Enemy>();
+
+	//	enemy->Init();
+	//	enemy->SetTexture(&m_enemyTex);
+
+	//	m_enemyList.emplace_back(enemy);
+	//}
+}
+
+void Scene::EnemyPop()
+{
 	auto it = m_enemyList.begin();
 
 	while (it != m_enemyList.end())
@@ -107,7 +137,7 @@ void Scene::UpdateGame()
 		else it++;
 	}
 
-	if (rand() % 100 < 3)
+	for(size_t l_i=NULL;l_i<10;++l_i)
 	{
 		std::shared_ptr<C_Enemy> enemy;
 		enemy = std::make_shared<C_Enemy>();
@@ -163,9 +193,12 @@ void Scene::Init()
 	m_ui = std::make_unique<C_Ui>();
 	m_explTex.Load("texture/cursor/CUI.png");
 	m_lClickTex.Load("texture/ClickUi.png");
-	m_ui->SetTex(&m_explTex, &m_lClickTex);
+	m_timerTex.Load("texture/numbers.png");
+	m_hpTex.Load("texture/backTexture/hp.png");
+	m_ui->SetTex(&m_explTex, &m_lClickTex,&m_timerTex,&m_hpTex);
 	m_ui->Init();
 	m_explFlg = false;
+	m_bUpdateFlg = false;
 
 }
 
@@ -176,6 +209,9 @@ void Scene::Release()
 	m_bulletTex.Release();
 	m_enemyTex. Release();
 	m_cloudTex. Release();
+	m_explTex.  Release();
+	m_lClickTex.Release();
+	m_timerTex. Release();
 	m_backTex.  Release();
 }
 
@@ -206,4 +242,9 @@ void Scene::CalcMousePos()
 std::vector<std::shared_ptr<C_Enemy>> Scene::GetEnemyList()
 {
 	return m_enemyList;
+}
+
+int Scene::Timer()
+{
+	return m_player.Timer();
 }

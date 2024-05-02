@@ -37,7 +37,10 @@ private:
 	std::shared_ptr<C_Ui> m_ui;
 	KdTexture m_explTex;
 	KdTexture m_lClickTex;
-	bool m_explFlg = false;
+	KdTexture m_timerTex;
+	KdTexture m_hpTex;
+	bool m_explFlg;
+	bool m_bUpdateFlg;
 	int m_directorCount;
 
 	KdTexture m_playerTex;
@@ -53,6 +56,8 @@ public:
 
 	void Update();
 
+	void EnemyPop();
+
 	void UpdateGame();
 
 	void Draw2D();
@@ -60,6 +65,8 @@ public:
 	void ImGuiUpdate();
 
 	void CalcMousePos();
+
+	int Timer();
 
 	std::vector<std::shared_ptr<C_Enemy>> GetEnemyList();
 

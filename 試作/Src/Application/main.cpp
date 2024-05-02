@@ -247,7 +247,9 @@ void Application::Execute()
 			baseTime = st;
 			count = 0;
 		}
-
+		// タイトルバーにFPS表示
+		std::string titleBar = "Cronushooter <Fps = " + std::to_string(m_fps) + ">";
+		SetWindowTextA(m_window.GetWndHandle(),titleBar.c_str());
 	}
 
 	// ゲーム解放

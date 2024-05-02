@@ -24,6 +24,7 @@ private:
 	Math::Vector2 m_pos;
 	bool m_eAlive;
 	Math::Vector2 m_move;
+	int m_hp;
 	const float TEX_RADIUS = 32.0f;
 	const int TEX_SIZE = 64;
 };

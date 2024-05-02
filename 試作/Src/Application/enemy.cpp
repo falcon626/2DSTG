@@ -17,11 +17,12 @@ C_Enemy::~C_Enemy()
 
 void C_Enemy::Init()
 {
-	m_eAlive = false;
+	m_eAlive = true;
 	m_pos.x  = 0;
 	m_pos.y  = 250;
 	m_move.x = 0;
 	m_move.y = 5;
+	m_hp = 2;
 }
 
 void C_Enemy::Update()
@@ -30,13 +31,15 @@ void C_Enemy::Update()
 	{
 		m_pos.x = rand() % 1217 - 608;
 		m_pos.y = 392;
-		m_eAlive = true;
+		//m_eAlive = true;
 	}
 	if (!m_eAlive)return;
 	m_pos -= m_move;
 	if (m_pos.y <= -Screen::HalfHeight - TEX_RADIUS)
 	{
-		m_eAlive = false;
+		m_pos.x = rand() % 1217 - 608;
+		m_pos.y = 392;
+		//m_eAlive = true;
 	}
 	m_mat = Math::Matrix::CreateTranslation(m_pos.x, m_pos.y, Def::Vec.z);
 }
@@ -65,7 +68,8 @@ const bool C_Enemy::GetAlive()
 
 void C_Enemy::Hit()
 {
-	m_eAlive = false;
+	if (m_hp != 1)m_hp--;
+	else m_eAlive = false;
 }
 
 void C_Enemy::MatrixSet()

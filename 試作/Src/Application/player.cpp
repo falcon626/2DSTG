@@ -18,6 +18,7 @@ void C_Player::Init()
 	m_timer = std::make_shared<C_Timer>();
 	m_pos.x = 0;
 	m_pos.y = -150;
+	m_bAlive = true;
 }
 
 void C_Player::Update(const POINT a_mouse)
@@ -87,7 +88,7 @@ void C_Player::Update(const POINT a_mouse)
 	}
 	//else m_bulletInterval--;
 
-	for (int b = 0; b < m_bulletList.size(); b++) m_bulletList[b]->Update(m_bTime);
+	for (size_t b = NULL; b < m_bulletList.size(); ++b) m_bulletList[b]->Update(m_bTime);
 
 	std::vector<C_Bullet*>::iterator it;
 	it = m_bulletList.begin();
@@ -121,7 +122,7 @@ void C_Player::CheckHitBullet()
 	for (decltype(auto) l_eneLis : l_enemy)
 	{
 		if (!l_eneLis->GetAlive())continue;
-		for (size_t b = 0; b < m_bulletList.size(); ++b)
+		for (size_t b = NULL; b < m_bulletList.size(); ++b)
 		{
 			const auto x = l_eneLis->GetPos().x - m_bulletList[b]->GetPos().x;
 			const auto y = l_eneLis->GetPos().y - m_bulletList[b]->GetPos().y;
@@ -133,6 +134,22 @@ void C_Player::CheckHitBullet()
 				m_bulletList[b]->Hit();
 				++m_breakCount;
 			}
+		}
+	}
+}
+
+void C_Player::CheckHitEnemy()
+{
+	auto l_enemy = m_pOwner->GetEnemyList();
+	for (decltype(auto) l_eneLis : l_enemy)
+	{
+		if (!l_eneLis->GetAlive())continue;
+		const auto vec = l_eneLis->GetPos() - m_pos;
+		const auto dist = sqrt(vec.x * vec.x + vec.y + vec.y);
+		const auto hitDist = l_eneLis->GetRadius() + PlayerRad;
+		if (dist < hitDist)
+		{
+			m_bAlive = false;
 		}
 	}
 }
