@@ -1,6 +1,6 @@
 #pragma once
-#include"bullet.h"
 class C_Timer;
+class C_Bullet;
 class Scene;
 
 class C_Player
@@ -27,7 +27,7 @@ public:
 	void SetBulletTextrure(KdTexture* a_pTex);
 	void SetOwner(Scene* a_pOwner);
 
-	int GetBreakNum() const { return m_breakCount; }
+	Math::Vector2 GetPos();
 
 private:
 	int m_frame;
@@ -36,16 +36,17 @@ private:
 	Math::Vector2 m_pos;
 	Math::Vector2 m_move;
 	Math::Matrix m_mat;
+	Math::Color m_color = {1,1,1,1};
 	std::vector<C_Bullet*> m_bulletList;
 	Scene* m_pOwner;
 
 	std::shared_ptr<C_Timer> m_timer;
 	bool m_bTimeSun;
 
-	int m_breakCount;
 	int m_bulletInterval;
 	int m_maxInterval;
 	int m_time;
+	int m_muteki;
 	bool m_bAlive;
 	bool m_bReload;
 	bool m_bTime;

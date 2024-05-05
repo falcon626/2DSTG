@@ -23,6 +23,7 @@ void C_Ui::Init()
 	m_frame = NULL;
 	m_colorChanger = ColorChanger;
 	m_rec[Ui::Timer] = { NULL,NULL,TimerW,TimerH };
+	m_nowHp = HpNum;
 }
 
 void C_Ui::DrawExplanation()
@@ -93,9 +94,25 @@ void C_Ui::UpdateTimer()
 
 void C_Ui::DrawHp()
 {
-	for (size_t l_i = NULL; l_i < HpNum - m_lostHp; ++l_i)
+	if (m_nowHp==3)
 	{
-		SHADER.m_spriteShader.SetMatrix(m_hpMat[l_i]);
+		for (size_t l_i = NULL; l_i < HpNum; ++l_i)
+		{
+			SHADER.m_spriteShader.SetMatrix(m_hpMat[l_i]);
+			SHADER.m_spriteShader.DrawTex(m_pHpTex, NULL, NULL, &m_rec[Ui::Hp], &m_color[Ui::Hp]);
+		}
+	}
+	else if (m_nowHp == 2)
+	{
+		for (size_t l_i = NULL; l_i < 2; ++l_i)
+		{
+			SHADER.m_spriteShader.SetMatrix(m_hpMat[l_i]);
+			SHADER.m_spriteShader.DrawTex(m_pHpTex, NULL, NULL, &m_rec[Ui::Hp], &m_color[Ui::Hp]);
+		}
+	}
+	else if (m_nowHp == 1)
+	{
+		SHADER.m_spriteShader.SetMatrix(m_hpMat[0]);
 		SHADER.m_spriteShader.DrawTex(m_pHpTex, NULL, NULL, &m_rec[Ui::Hp], &m_color[Ui::Hp]);
 	}
 	
@@ -103,7 +120,7 @@ void C_Ui::DrawHp()
 
 void C_Ui::UpdateHp()
 {
-	for (size_t l_i = NULL; l_i < HpNum - m_lostHp; ++l_i)
+	for (size_t l_i = NULL; l_i < HpNum; ++l_i)
 	{
 		auto l_traMat = Math::Matrix::CreateTranslation(m_pos[Ui::Hp].x + (DistTimer * l_i), m_pos[Ui::Hp].y, Def::Vec.z);
 		auto l_scaMat = Math::Matrix::CreateScale(m_scal[Ui::Hp].x);
@@ -111,10 +128,15 @@ void C_Ui::UpdateHp()
 	}
 }
 
+void C_Ui::DownHp()
+{
+	m_nowHp--;
+}
+
 void C_Ui::SetTex(KdTexture* a_pTex, KdTexture* a_plClickTex, KdTexture* a_pTimerTex, KdTexture* a_pHpTex)
 {
-	m_pTex = a_pTex;
+	m_pTex       = a_pTex;
 	m_plClickTex = a_plClickTex;
-	m_pTimerTex = a_pTimerTex;
-	m_pHpTex = a_pHpTex;
+	m_pTimerTex  = a_pTimerTex;
+	m_pHpTex     = a_pHpTex;
 }

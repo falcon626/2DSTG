@@ -48,6 +48,11 @@ private:
 	KdTexture m_bulletTex;
 	std::vector<std::shared_ptr<C_Enemy>> m_enemyList;
 	KdTexture m_enemyTex;
+
+	std::vector<std::shared_ptr<C_Enemy>> m_lineEnemyList;
+	KdTexture m_lineEnemyTex;
+
+	int breakNum;
 public:
 
 	void Init();
@@ -68,7 +73,10 @@ public:
 
 	int Timer();
 
+	void Hit();
+
 	std::vector<std::shared_ptr<C_Enemy>> GetEnemyList();
+	std::vector<std::shared_ptr<C_Enemy>> GetLineEnemyList();
 
 private:
 

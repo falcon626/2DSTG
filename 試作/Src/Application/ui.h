@@ -16,6 +16,8 @@ public:
 	void DrawHp();
 	void UpdateHp();
 
+	void DownHp();
+
 	void SetTex(KdTexture* a_pTex, KdTexture* a_plClickTex, KdTexture* a_pTimerTex, KdTexture* a_pHpTex);
 
 private:
@@ -78,7 +80,7 @@ private:
 	std::array<Math::Rectangle , Ui::All > m_rec;
 	std::array<Math::Rectangle , Digit::DigitMax> m_timerRec;
 	int m_frame;
-	int m_lostHp;
+	int m_nowHp;
 	float m_redChanger;
 	float m_colorChanger;
 };

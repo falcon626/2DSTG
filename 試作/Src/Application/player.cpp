@@ -1,4 +1,5 @@
 #include "player.h"
+#include"bullet.h"
 #include "Utility.h"
 #include "timer.h"
 #include "Scene.h"
@@ -56,10 +57,10 @@ void C_Player::Update(const POINT a_mouse)
 		m_bTime = false;
 		m_timer->Stop();
 	}
-	if (m_pos.x <= -Screen::HalfWidth)m_pos.x  = -Screen::HalfWidth;
-	if (m_pos.x >=  Screen::HalfWidth)m_pos.x  =  Screen::HalfWidth;
-	if (m_pos.y <= -Screen::HalfHeight)m_pos.y = -Screen::HalfHeight;
-	if (m_pos.y >=  Screen::HalfHeight)m_pos.y =  Screen::HalfHeight;
+	if (m_pos.x <= -Screen::HalfWidth+PlayerRad)m_pos.x  = -Screen::HalfWidth+PlayerRad;
+	if (m_pos.x >=  Screen::HalfWidth-PlayerRad)m_pos.x  =  Screen::HalfWidth-PlayerRad;
+	if (m_pos.y <= -Screen::HalfHeight+PlayerRad)m_pos.y = -Screen::HalfHeight+PlayerRad;
+	if (m_pos.y >=  Screen::HalfHeight-PlayerRad)m_pos.y =  Screen::HalfHeight-PlayerRad;
 	if (Key::IsPushing(Key::L_Click) && m_bulletInterval <= 0)
 	{
 		m_bulletInterval = 30;
@@ -102,6 +103,12 @@ void C_Player::Update(const POINT a_mouse)
 		}
 		else it++;
 	}
+	if (m_muteki != NULL)
+	{
+		m_muteki--;
+		m_color.A(0.5f);
+	}
+	else m_color = Def::Color;
 	m_frame++;
 	m_mat = Math::Matrix::CreateTranslation(m_pos.x, m_pos.y, Def::Vec.z);
 }
@@ -113,7 +120,8 @@ void C_Player::Draw()
 		m_bulletList[b]->Draw();
 	}
 	SHADER.m_spriteShader.SetMatrix(m_mat);
-	SHADER.m_spriteShader.DrawTex(m_pTex, Math::Rectangle(0, 0, 64, 64), Def::Color.A());
+	Math::Rectangle l_rec = { 0,0,64,64 };
+	SHADER.m_spriteShader.DrawTex(m_pTex,NULL,NULL,&l_rec,&m_color);
 }
 
 void C_Player::CheckHitBullet()
@@ -132,7 +140,26 @@ void C_Player::CheckHitBullet()
 			{
 				l_eneLis->Hit();
 				m_bulletList[b]->Hit();
-				++m_breakCount;
+			}
+		}
+	}
+	l_enemy = m_pOwner->GetLineEnemyList();
+	for (decltype(auto) l_eneLis : l_enemy)
+	{
+		for (size_t l_i = NULL; l_i < 5; ++l_i)
+		{
+			if (!l_eneLis->GetLineAlive(l_i))continue;
+			for (size_t b = NULL; b < m_bulletList.size(); ++b)
+			{
+				const auto x = l_eneLis->GetLinePos(l_i).x - m_bulletList[b]->GetPos().x;
+				const auto y = l_eneLis->GetLinePos(l_i).y - m_bulletList[b]->GetPos().y;
+				const auto z = sqrt(x * x + y * y);
+				const auto hitDist = l_eneLis->GetRadius() + m_bulletList[b]->GetRadius();
+				if (z < hitDist)
+				{
+					l_eneLis->LineHit(l_i);
+					m_bulletList[b]->Hit();
+				}
 			}
 		}
 	}
@@ -144,12 +171,18 @@ void C_Player::CheckHitEnemy()
 	for (decltype(auto) l_eneLis : l_enemy)
 	{
 		if (!l_eneLis->GetAlive())continue;
-		const auto vec = l_eneLis->GetPos() - m_pos;
-		const auto dist = sqrt(vec.x * vec.x + vec.y + vec.y);
+		const auto x = l_eneLis->GetPos().x - m_pos.x;
+		const auto y = l_eneLis->GetPos().y - m_pos.y;
+		const auto dist = sqrt(x * x + y * y);
 		const auto hitDist = l_eneLis->GetRadius() + PlayerRad;
 		if (dist < hitDist)
 		{
-			m_bAlive = false;
+			if (m_muteki == NULL)
+			{
+				//m_bAlive = false;
+				SCENE.Hit();
+				m_muteki = 60;
+			}
 		}
 	}
 }
@@ -184,4 +217,9 @@ void C_Player::SetBulletTextrure(KdTexture* a_pTex)
 void C_Player::SetOwner(Scene* a_pOwner)
 {
 	m_pOwner = a_pOwner;
+}
+
+Math::Vector2 C_Player::GetPos()
+{
+	return m_pos;
 }

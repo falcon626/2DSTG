@@ -26,6 +26,7 @@ void Scene::Draw2D()
 			if (m_directorCount > 60)
 			{
 				for (decltype(auto) l_eneLis : m_enemyList) l_eneLis->Draw();
+				for (decltype(auto) l_eneLis : m_lineEnemyList) l_eneLis->DrawLineEnemy();
 				m_player.Draw();
 				m_ui->DrawTimer();
 			}
@@ -69,7 +70,11 @@ void Scene::Update()
 				m_player.MatrixSet();
 				EnemyPop();
 			}
-			if (m_directorCount > 120) m_bUpdateFlg = true;
+			if (m_directorCount > 120 && !m_bUpdateFlg)
+			{
+				m_player.StartTimer();
+				m_bUpdateFlg = true;
+			}
 			if (m_bUpdateFlg)
 			{
 				m_cloud->Update();
@@ -78,7 +83,9 @@ void Scene::Update()
 				m_player.Update(m_mouse);
 				UpdateGame();
 				for (decltype(auto) l_eneLis : m_enemyList) l_eneLis->Update();
+				for (decltype(auto) l_eneLis : m_lineEnemyList) l_eneLis->UpdateLineEnemy(m_player.GetPos());
 				m_player.CheckHitBullet();
+				m_player.CheckHitEnemy();
 			}
 		}
 		break;
@@ -107,24 +114,55 @@ void Scene::Update()
 
 void Scene::UpdateGame()
 {
-	//auto it = m_enemyList.begin();
+	auto it = m_enemyList.begin();
 
-	//while (it != m_enemyList.end())
-	//{
-	//	if ((*it)->GetAlive() == false) it = m_enemyList.erase(it);
-	//	else it++;
-	//}
+	while (it != m_enemyList.end())
+	{
+		if ((*it)->GetAlive() == false)
+		{
+			++breakNum;
+			it = m_enemyList.erase(it);
+		}
+		else it++;
+	}
 
-	//if (rand() % 100 < 1)
-	//{
-	//	std::shared_ptr<C_Enemy> enemy;
-	//	enemy = std::make_shared<C_Enemy>();
+	if (rand() % 100 < 1)
+	{
+		std::shared_ptr<C_Enemy> enemy;
+		enemy = std::make_shared<C_Enemy>();
 
-	//	enemy->Init();
-	//	enemy->SetTexture(&m_enemyTex);
+		enemy->Init();
+		enemy->SetTexture(&m_enemyTex);
 
-	//	m_enemyList.emplace_back(enemy);
-	//}
+		m_enemyList.emplace_back(enemy);
+	}
+
+	it = m_lineEnemyList.begin();
+	auto l_count = NULL;
+	while (it != m_lineEnemyList.end())
+	{
+		if ((*it)->GetLineTeamAlive() == false)
+		{
+			++breakNum;
+			it = m_lineEnemyList.erase(it);
+		}
+		else
+		{
+			it++;
+			l_count++;
+		}
+	}
+
+	if (rand() % 100 < 1 && l_count < 3)
+	{
+		std::shared_ptr<C_Enemy> enemy;
+		enemy = std::make_shared<C_Enemy>();
+
+		enemy->InitLineEnemy(m_player.GetPos());
+		enemy->SetTexture(&m_lineEnemyTex);
+
+		m_lineEnemyList.emplace_back(enemy);
+	}
 }
 
 void Scene::EnemyPop()
@@ -173,10 +211,10 @@ void Scene::Init()
 	m_player.SetOwner(this);
 
 	m_enemyTex.Load("texture/flyObj.png");
+	m_lineEnemyTex.Load("texture/1enemy.png");
 
 	m_bulletTex.Load("texture/nc.png");
 
-	m_player.StartTimer();
 
 	m_nowScene = m_nextScene = Screen::Scene::INITIAL;
 	m_cut = std::make_unique<C_Cloud>();
@@ -208,6 +246,7 @@ void Scene::Release()
 	m_playerTex.Release();
 	m_bulletTex.Release();
 	m_enemyTex. Release();
+	m_lineEnemyTex.Release();
 	m_cloudTex. Release();
 	m_explTex.  Release();
 	m_lClickTex.Release();
@@ -225,7 +264,7 @@ void Scene::ImGuiUpdate()
 	{
 		ImGui::Text("FPS : %d", APP.m_fps);
 		ImGui::Text("%d", m_player.Timer());
-		ImGui::Text("%d", m_player.GetBreakNum());
+		ImGui::Text("%d", breakNum);
 	}
 	ImGui::End();
 }
@@ -244,7 +283,17 @@ std::vector<std::shared_ptr<C_Enemy>> Scene::GetEnemyList()
 	return m_enemyList;
 }
 
+std::vector<std::shared_ptr<C_Enemy>> Scene::GetLineEnemyList()
+{
+	return m_lineEnemyList;
+}
+
 int Scene::Timer()
 {
 	return m_player.Timer();
+}
+
+void Scene::Hit()
+{
+	m_ui->DownHp();
 }
