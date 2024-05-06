@@ -33,7 +33,7 @@ namespace Key
 		A='A',
 		B,C,D,E,F,G,H,I,J,K,L,N,M,O,P,Q,R,S,T,U,V,W,X,Y,Z,
 		L_Click=VK_LBUTTON,R_Click=VK_RBUTTON,Wheel_Click=VK_MBUTTON,
-		Space=VK_SPACE,BackSpace=VK_BACK,Enter=VK_RETURN,
+		Space=VK_SPACE,BackSpace=VK_BACK,Enter=VK_RETURN,Esc=VK_ESCAPE,
 		L_Ctrl=VK_LCONTROL,R_Ctrl=VK_RCONTROL,
 		L_Shift=VK_LSHIFT,R_Shift=VK_RSHIFT,
 		Up=VK_UP,Down=VK_DOWN,Left=VK_LEFT,Right=VK_RIGHT,

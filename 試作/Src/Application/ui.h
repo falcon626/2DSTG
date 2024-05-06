@@ -13,12 +13,20 @@ public:
 	void DrawTimer();
 	void UpdateTimer();
 
+	void InitNumber(float a_y=NULL);
+	void DrawNumber(bool a_b=false);
+	void UpdateNumber(int a_num);
+
 	void DrawHp();
 	void UpdateHp();
 
 	void DownHp();
 
+	int GetHp() { return m_nowHp; }
+
 	void SetTex(KdTexture* a_pTex, KdTexture* a_plClickTex, KdTexture* a_pTimerTex, KdTexture* a_pHpTex);
+
+	void SetTextTex(KdTexture* a_pTex) { m_pTextTex = a_pTex; }
 
 private:
 	const int FrameLimit = 10;
@@ -70,15 +78,18 @@ private:
  	KdTexture* m_plClickTex;
  	KdTexture* m_pTimerTex;
  	KdTexture* m_pHpTex;
+ 	KdTexture* m_pTextTex;
 	std::array<Math::Vector2, Ui::All> m_pos;
 	std::array<Math::Vector2, Ui::All> m_scal;
 	std::array<Math::Vector2, Digit::DigitMax> m_timerPos;
 	std::array<Math::Matrix, Ui::All> m_mat;
+	Math::Matrix m_texMat;
 	std::array<Math::Matrix , Digit::DigitMax> m_timerMat;
 	std::array<Math::Matrix , HpNum> m_hpMat;
 	std::array<Math::Color , Ui::All > m_color;
 	std::array<Math::Rectangle , Ui::All > m_rec;
 	std::array<Math::Rectangle , Digit::DigitMax> m_timerRec;
+	int m_lag;
 	int m_frame;
 	int m_nowHp;
 	float m_redChanger;

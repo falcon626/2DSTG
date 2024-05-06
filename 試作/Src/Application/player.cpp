@@ -63,7 +63,7 @@ void C_Player::Update(const POINT a_mouse)
 	if (m_pos.y >=  Screen::HalfHeight-PlayerRad)m_pos.y =  Screen::HalfHeight-PlayerRad;
 	if (Key::IsPushing(Key::L_Click) && m_bulletInterval <= 0)
 	{
-		m_bulletInterval = 30;
+		m_bulletInterval = 15;
 		const float x = a_mouse.x - m_pos.x;
 		const float y = a_mouse.y - m_pos.y;
 		const float radian = atan2(y, x);
@@ -185,6 +185,27 @@ void C_Player::CheckHitEnemy()
 			}
 		}
 	}
+	auto l_lineEnemy = m_pOwner->GetLineEnemyList();
+	for (decltype(auto) l_eneLis : l_lineEnemy)
+	{
+		for (size_t l_i = NULL; l_i < 5; ++l_i)
+		{
+			if (!l_eneLis->GetLineAlive(l_i))continue;
+			const auto x = l_eneLis->GetLinePos(l_i).x - m_pos.x;
+			const auto y = l_eneLis->GetLinePos(l_i).y - m_pos.y;
+			const auto dist = sqrt(x * x + y * y);
+			const auto hitDist = l_eneLis->GetRadius() + PlayerRad;
+			if (dist < hitDist)
+			{
+				if (m_muteki == NULL)
+				{
+					//m_bAlive = false;
+					SCENE.Hit();
+					m_muteki = 60;
+				}
+			}
+		}
+	}
 }
 
 void C_Player::StartTimer()
@@ -195,6 +216,11 @@ void C_Player::StartTimer()
 int C_Player::Timer()
 {
 	return m_timer->ElapsedSeconds();
+}
+
+void C_Player::Stop()
+{
+	m_timer->Stop();
 }
 
 void C_Player::MatrixSet()

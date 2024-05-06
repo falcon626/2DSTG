@@ -160,6 +160,7 @@
     <ClInclude Include="..\Library\tinygltf\stb_image_write.h" />
     <ClInclude Include="..\Library\tinygltf\tiny_gltf.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Src\Application\animation.h" />
     <ClInclude Include="Src\Application\back.h" />
     <ClInclude Include="Src\Application\bullet.h" />
     <ClInclude Include="Src\Application\cloud.h" />
@@ -194,6 +195,7 @@
     <ClCompile Include="..\Library\imgui\imgui_impl_dx11.cpp" />
     <ClCompile Include="..\Library\imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="..\Library\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="Src\Application\animation.cpp" />
     <ClCompile Include="Src\Application\back.cpp" />
     <ClCompile Include="Src\Application\bullet.cpp" />
     <ClCompile Include="Src\Application\cloud.cpp" />

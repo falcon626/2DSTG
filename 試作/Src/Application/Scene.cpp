@@ -5,6 +5,7 @@
 #include "back.h"
 #include "cloud.h"
 #include "ui.h"
+#include "animation.h"
 
 void Scene::Draw2D()
 {
@@ -27,6 +28,7 @@ void Scene::Draw2D()
 			{
 				for (decltype(auto) l_eneLis : m_enemyList) l_eneLis->Draw();
 				for (decltype(auto) l_eneLis : m_lineEnemyList) l_eneLis->DrawLineEnemy();
+				for (decltype(auto) l_anima : m_anima) l_anima->DrawBra();
 				m_player.Draw();
 				m_ui->DrawTimer();
 			}
@@ -39,6 +41,8 @@ void Scene::Draw2D()
 	case Screen::Scene::PAUSE:
 		break;
 	case Screen::Scene::RESULT:
+		m_number[0]->DrawNumber(true);
+		m_number[1]->DrawNumber();
 		break;
 	}
 	if (m_bCut) m_cut->DrawCut();
@@ -68,7 +72,7 @@ void Scene::Update()
 			{
 				m_cloud->MatrixSet();
 				m_player.MatrixSet();
-				EnemyPop();
+				//EnemyPop();
 			}
 			if (m_directorCount > 120 && !m_bUpdateFlg)
 			{
@@ -84,36 +88,62 @@ void Scene::Update()
 				UpdateGame();
 				for (decltype(auto) l_eneLis : m_enemyList) l_eneLis->Update();
 				for (decltype(auto) l_eneLis : m_lineEnemyList) l_eneLis->UpdateLineEnemy(m_player.GetPos());
+				for (decltype(auto) l_anima : m_anima) l_anima->UpdateBra();
 				m_player.CheckHitBullet();
 				m_player.CheckHitEnemy();
+				if (m_ui->GetHp() <= NULL)m_nextScene = Screen::Scene::RESULT;
 			}
 		}
 		break;
 	case Screen::Scene::PAUSE:
 		break;
 	case Screen::Scene::RESULT:
+		m_number[0]->UpdateNumber(m_player.Timer());
+		m_number[1]->UpdateNumber(breakNum);
 		break;
 	}
 
-	if (m_nowScene != m_nextScene) m_bCut = true;
+	if (Key::IsPushing(Key::Esc)) m_nextScene = Screen::Scene::INITIAL;
+	if (m_nowScene != Screen::Scene::GAME)
+	{
+		m_player.Stop();
+	}
+
+	if (m_nowScene != m_nextScene)
+	{
+		if(m_cutCount==NULL)m_cut->InitCut();
+		m_bCut = true;
+		m_directorCount = NULL;
+	}
 	if (m_bCut)
 	{
 		m_cut->UpdateCut();
 		if (m_cutCount > SceneSwitchCount) m_nowScene = m_nextScene;
 		if (m_cutCount > SceneCutEndCount)
 		{
-			m_cut->SetPopFlg(m_bCut);
+			if (m_nowScene == Screen::Scene::GAME) m_player.Init();
 			m_bCut = m_cut->GetAlpFlg();
+			m_cut->SetPopFlg(m_bCut);
 		}
 		m_cutCount++;
 	}
 	else m_cutCount = NULL;
+
+	if (Key::IsPushing(Key::Q)) debag = true;
 
 	m_mat = Math::Matrix::CreateTranslation( m_mouse.x,m_mouse.y , Def::Vec.z);
 }
 
 void Scene::UpdateGame()
 {
+	auto ait = m_anima.begin();
+
+	while (ait != m_anima.end())
+	{
+		if ((*ait)->GetFlg() == false) ait = m_anima.erase(ait);
+		else ait++;
+	}
+
 	auto it = m_enemyList.begin();
 
 	while (it != m_enemyList.end())
@@ -121,6 +151,11 @@ void Scene::UpdateGame()
 		if ((*it)->GetAlive() == false)
 		{
 			++breakNum;
+			std::shared_ptr<C_Anima> anima;
+			anima = std::make_shared<C_Anima>();
+			anima->SetTex(&m_hitTex, &m_breTex);
+			anima->BreAnimaStart((*it)->GetPos());
+			m_anima.emplace_back(anima);
 			it = m_enemyList.erase(it);
 		}
 		else it++;
@@ -189,6 +224,8 @@ void Scene::EnemyPop()
 
 void Scene::Init()
 {
+	m_bKey.fill(false);
+
 	m_tex.Load("texture/cursor/cursor.png");
 
 	m_title = std::make_unique<C_Title>();
@@ -228,16 +265,28 @@ void Scene::Init()
 	m_cloud->SetTex(&m_cloudTex);
 	m_cloud->Init();
 
-	m_ui = std::make_unique<C_Ui>();
+	m_ui = std::make_shared<C_Ui>();
 	m_explTex.Load("texture/cursor/CUI.png");
 	m_lClickTex.Load("texture/ClickUi.png");
 	m_timerTex.Load("texture/numbers.png");
 	m_hpTex.Load("texture/backTexture/hp.png");
+	m_textTex.Load("texture/textResult.png");
 	m_ui->SetTex(&m_explTex, &m_lClickTex,&m_timerTex,&m_hpTex);
 	m_ui->Init();
 	m_explFlg = false;
 	m_bUpdateFlg = false;
 
+	m_number[0]=std::make_shared<C_Ui>();
+	m_number[1]=std::make_shared<C_Ui>();
+	m_number[0]->SetTextTex(&m_textTex);
+	m_number[1]->SetTextTex(&m_textTex);
+	m_number[0]->SetTex(&m_explTex, &m_lClickTex, &m_timerTex, &m_hpTex);
+	m_number[1]->SetTex(&m_explTex, &m_lClickTex, &m_timerTex, &m_hpTex);
+	m_number[0]->InitNumber(200);
+	m_number[1]->InitNumber(-100);
+
+	m_hitTex.Load("texture/hitEf.png");
+	m_breTex.Load("texture/explosion.png");
 }
 
 void Scene::Release()
@@ -290,10 +339,11 @@ std::vector<std::shared_ptr<C_Enemy>> Scene::GetLineEnemyList()
 
 int Scene::Timer()
 {
-	return m_player.Timer();
+	return (m_oneStageTime * m_stageNum) - m_player.Timer();
 }
 
 void Scene::Hit()
 {
+	if (debag && 1 >= m_ui->GetHp())return;
 	m_ui->DownHp();
 }

@@ -1,15 +1,18 @@
 #pragma once
-#define DEBUG
+//#define DEBUG
 #include "player.h"
 #include "enemy.h"
 class C_Title;
 class C_Back;
 class C_Cloud;
 class C_Ui;
+class C_Anima;
 
 class Scene
 {
 private:
+	bool debag = false;
+
 	POINT m_mouse;
 	Math::Matrix m_mat;
 	KdTexture m_tex;
@@ -42,6 +45,8 @@ private:
 	bool m_explFlg;
 	bool m_bUpdateFlg;
 	int m_directorCount;
+	int m_oneStageTime = 30;
+	int m_stageNum = 3;
 
 	KdTexture m_playerTex;
 	C_Player m_player;
@@ -53,6 +58,16 @@ private:
 	KdTexture m_lineEnemyTex;
 
 	int breakNum;
+
+	std::vector<std::shared_ptr<C_Anima>>m_anima;
+	KdTexture m_hitTex;
+	KdTexture m_breTex;
+	KdTexture m_textTex;
+
+	std::vector<std::string> m_strPass;
+	std::array<bool, 100> m_bKey;
+
+	std::array<std::shared_ptr<C_Ui>, 2> m_number;
 public:
 
 	void Init();
@@ -77,6 +92,8 @@ public:
 
 	std::vector<std::shared_ptr<C_Enemy>> GetEnemyList();
 	std::vector<std::shared_ptr<C_Enemy>> GetLineEnemyList();
+
+	std::shared_ptr<C_Anima> GetAnima();
 
 private:
 

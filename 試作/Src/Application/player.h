@@ -20,6 +20,7 @@ public:
 
 	void StartTimer();
 	int Timer();
+	void Stop();
 
 	void MatrixSet();
 
@@ -51,7 +52,7 @@ private:
 	bool m_bReload;
 	bool m_bTime;
 
-	const float PlayerRad = 32.0f;
+	const float PlayerRad = 16.0f;
 	const float NormalSpd = 10.0f;
 	const float SlowSpd = 3.0f;
 };

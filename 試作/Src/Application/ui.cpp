@@ -24,13 +24,14 @@ void C_Ui::Init()
 	m_colorChanger = ColorChanger;
 	m_rec[Ui::Timer] = { NULL,NULL,TimerW,TimerH };
 	m_nowHp = HpNum;
+	m_lag = NULL;
 }
 
 void C_Ui::DrawExplanation()
 {
 	SHADER.m_spriteShader.SetMatrix(m_mat[Ui::Explanation]);
 	SHADER.m_spriteShader.DrawTex(m_pTex, m_rec[Ui::Explanation],m_color[Ui::Explanation].A());
-	if (m_frame >= FrameLimit)
+	if (m_frame > FrameLimit &&  m_lag!=NULL)
 	{
 		SHADER.m_spriteShader.SetMatrix(m_mat[Ui::Lclick]);
 		SHADER.m_spriteShader.DrawTex(m_plClickTex, NULL, NULL, &m_rec[Ui::Lclick], &m_color[Ui::Lclick]);
@@ -62,6 +63,7 @@ bool C_Ui::UpdateExplanation()
 		l_tarMat = Math::Matrix::CreateTranslation(m_pos[Ui::Lclick].x, m_pos[Ui::Lclick].y, Def::Vec.z);
 		l_scaMat = Math::Matrix::CreateScale(m_scal[Ui::Lclick].x);
 		m_mat[Ui::Lclick] = l_scaMat * l_tarMat;
+		m_lag = 1;
 	}
 	return l_flg;
 }
@@ -77,7 +79,7 @@ void C_Ui::DrawTimer()
 
 void C_Ui::UpdateTimer()
 {
-	auto l_timer = 300 - SCENE.Timer();
+	auto l_timer = SCENE.Timer();
 	auto l_hundred = l_timer / 100;
 	auto l_teen = (l_timer / 10) % 10;
 	auto l_one = l_timer % 10;
@@ -90,6 +92,47 @@ void C_Ui::UpdateTimer()
 		auto l_scaMat = Math::Matrix::CreateScale(m_scal[Ui::Timer].x);
 		m_timerMat[l_i] = l_scaMat * l_traMat;
 	}
+}
+
+void C_Ui::InitNumber(float a_y)
+{
+	m_pos.fill(Math::Vector2::Zero);
+	m_scal.fill(Math::Vector2::One);
+	m_mat.fill(Math::Matrix::Identity);
+	m_color.fill(Def::Color);
+	m_pos[Ui::Timer] = { -200,a_y };
+	m_scal[Ui::Timer] = { 0.3f,0.3f };
+}
+
+void C_Ui::DrawNumber(bool a_b)
+{
+	Math::Rectangle l_rec;
+	if (a_b) l_rec = { 0,0,155,80 };
+	else l_rec = { 155,0,410,80 };
+	for (size_t l_i = NULL; l_i < Digit::DigitMax; ++l_i)
+	{
+		SHADER.m_spriteShader.SetMatrix(m_timerMat[l_i]);
+		SHADER.m_spriteShader.DrawTex(m_pTimerTex, NULL, NULL, &m_timerRec[l_i], &m_color[Ui::Timer]);
+	}
+	SHADER.m_spriteShader.SetMatrix(m_texMat);
+	SHADER.m_spriteShader.DrawTex(m_pTextTex, NULL, NULL, &l_rec, &m_color[Ui::Timer]);
+}
+
+void C_Ui::UpdateNumber(int a_num)
+{
+	auto l_hundred = a_num / 100;
+	auto l_teen = (a_num / 10) % 10;
+	auto l_one = a_num % 10;
+	m_timerRec[Digit::Hundreds] = { TimerW * l_hundred, NULL, TimerW, TimerH };
+	m_timerRec[Digit::Tens] = { TimerW * l_teen, NULL, TimerW, TimerH };
+	m_timerRec[Digit::Ones] = { TimerW * l_one, NULL, TimerW, TimerH };
+	for (size_t l_i = NULL; l_i < Digit::DigitMax; ++l_i)
+	{
+		auto l_traMat = Math::Matrix::CreateTranslation(m_pos[Ui::Timer].x + (100 * l_i), m_pos[Ui::Timer].y, Def::Vec.z);
+		auto l_scaMat = Math::Matrix::CreateScale(m_scal[Ui::Timer].x);
+		m_timerMat[l_i] = l_scaMat * l_traMat;
+	}
+	m_texMat = Math::Matrix::CreateTranslation(300, m_pos[Ui::Timer].y, Def::Vec.z);
 }
 
 void C_Ui::DrawHp()

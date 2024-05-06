@@ -1,4 +1,5 @@
 #include "enemy.h"
+#include "animation.h"
 #include "Utility.h"
 C_Enemy::C_Enemy()
 {
@@ -12,7 +13,6 @@ C_Enemy::C_Enemy()
 
 C_Enemy::~C_Enemy()
 {
-
 }
 
 void C_Enemy::Init()
@@ -115,6 +115,7 @@ void C_Enemy::UpdateLineEnemy(Math::Vector2 a_vec)
 	if (!m_eAlive[Line]) return;
 	for (size_t l_i = NULL; l_i < LINETEAM; ++l_i)
 	{
+		m_linePos[l_i] += m_move[Line];
 		if (!m_bInScreen)
 		{
 			if ((m_linePos[l_i].x < Screen::HalfWidth && m_linePos[l_i].x > -Screen::HalfWidth) || (m_linePos[l_i].y < Screen::HalfHeight && m_linePos[l_i].y > -Screen::HalfHeight))m_bInScreen = true;
@@ -136,7 +137,6 @@ void C_Enemy::UpdateLineEnemy(Math::Vector2 a_vec)
 				m_move[Line] = { cos(radian) * 5,sin(radian) * 5 };
 			}
 		}
-		m_linePos[l_i] += m_move[Line];
 		auto l_tarMat = Math::Matrix::CreateTranslation(m_linePos[l_i].x, m_linePos[l_i].y, Def::Vec.z);
 		auto l_scaMat = Math::Matrix::CreateScale(Scale);
 		m_lineMat[l_i] = l_scaMat * l_tarMat;
@@ -162,8 +162,14 @@ const bool C_Enemy::GetAlive()
 
 void C_Enemy::Hit()
 {
-	if (m_hp[Normal] != 1) m_hp[Normal]--;
-	else m_eAlive[Normal] = false;
+	if (m_hp[Normal] != 1)
+	{
+		m_hp[Normal]--;
+	}
+	else
+	{
+		m_eAlive[Normal] = false;
+	}
 }
 
 const Math::Vector2 C_Enemy::GetLinePos(int a_i)

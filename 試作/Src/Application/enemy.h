@@ -1,4 +1,5 @@
 #pragma once
+
 class C_Enemy
 {
 public:
@@ -45,7 +46,7 @@ private:
 		Fifth,
 		Team
 	};
-	static const int LINETEAM = Team;
+	static const int LINETEAM = Forth;
 	int m_lag=NULL;
 	bool m_bInScreen;
 	std::array<Math::Matrix, AllRange> m_mat;
