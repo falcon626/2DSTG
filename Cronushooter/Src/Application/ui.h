@@ -6,12 +6,15 @@ public:
 	C_Ui() {}
 	~C_Ui() {}
 
-	void Init(int a_hp=3);
+	void Init(int a_hp=4);
 	void DrawExplanation();
 	bool UpdateExplanation();
 
 	void DrawTimer();
 	void UpdateTimer();
+
+	void DrawBreakNum();
+	void UpdateBreakNum();
 
 	void InitNumber(float a_y=NULL);
 	void DrawNumber(bool a_b=false);
@@ -24,7 +27,7 @@ public:
 
 	int GetHp() { return m_nowHp; }
 
-	void SetTex(KdTexture* a_pTex, KdTexture* a_plClickTex, KdTexture* a_pTimerTex, KdTexture* a_pHpTex);
+	void SetTex(KdTexture* a_pTex, KdTexture* a_plClickTex, KdTexture* a_pTimerTex, KdTexture* a_pHpTex, KdTexture* a_pBreNumTex);
 
 	void SetTextTex(KdTexture* a_pTex) { m_pTextTex = a_pTex; }
 
@@ -51,6 +54,7 @@ private:
 		Timer,
 		Explanation,
 		Lclick,
+		BreakNumber,
 		All
 	};
 	enum Numbers
@@ -79,16 +83,20 @@ private:
  	KdTexture* m_pTimerTex;
  	KdTexture* m_pHpTex;
  	KdTexture* m_pTextTex;
+ 	KdTexture* m_pBreNumTex;
 	std::array<Math::Vector2, Ui::All> m_pos;
 	std::array<Math::Vector2, Ui::All> m_scal;
 	std::array<Math::Vector2, Digit::DigitMax> m_timerPos;
+	std::array<Math::Vector2, Digit::DigitMax> m_brePos;
 	std::array<Math::Matrix, Ui::All> m_mat;
 	Math::Matrix m_texMat;
 	std::array<Math::Matrix , Digit::DigitMax> m_timerMat;
+	std::array<Math::Matrix , Digit::DigitMax> m_breMat;
 	std::array<Math::Matrix , HpNum> m_hpMat;
 	std::array<Math::Color , Ui::All > m_color;
 	std::array<Math::Rectangle , Ui::All > m_rec;
 	std::array<Math::Rectangle , Digit::DigitMax> m_timerRec;
+	std::array<Math::Rectangle , Digit::DigitMax> m_breRec;
 	int m_lag;
 	int m_frame;
 	int m_nowHp;

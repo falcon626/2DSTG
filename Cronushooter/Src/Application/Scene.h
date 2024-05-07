@@ -65,6 +65,7 @@ private:
 	KdTexture m_hitTex;
 	KdTexture m_breTex;
 	KdTexture m_textTex;
+	KdTexture m_breNumTex;
 
 	std::vector<std::string> m_strPass;
 	std::array<bool, 100> m_bKey;
@@ -104,6 +105,8 @@ public:
 	void CalcMousePos();
 
 	int Timer();
+
+	int GetBreakNumber();
 
 	void Hit();
 

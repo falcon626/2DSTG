@@ -12,10 +12,12 @@ void C_Ui::Init(int a_hp)
 	m_color[Ui::Lclick] = DefLclickColor;
 	m_pos[Ui::Lclick] = LclickPos;
 	m_pos[Ui::Timer] = { static_cast<float>(- Screen::HalfWidth + DistTimer/2),static_cast<float>(Screen::HalfHeight - DistTimer/2)};
+	m_pos[Ui::BreakNumber] = { static_cast<float>(- Screen::HalfWidth + DistTimer/2),static_cast<float>(Screen::HalfHeight - DistTimer/2)};
 	m_pos[Ui::Hp] = { static_cast<float>(- Screen::HalfWidth + DistTimer/2),static_cast<float>(Screen::HalfHeight - DistTimer*2)};
 	m_scal[Ui::Explanation] = { ScalExplCrr,ScalExplCrr };
 	m_scal[Ui::Lclick]      = { ScalLcliCrr,ScalLcliCrr };
 	m_scal[Ui::Timer]       = { ScalTimer,ScalTimer };
+	m_scal[Ui::BreakNumber]       = { ScalTimer,ScalTimer };
 	m_scal[Ui::Hp]          = { ScalTimer,ScalTimer };
 	m_rec[Ui::Hp]           = { NULL,NULL,HpTexRad,HpTexRad };
 	m_rec[Ui::Lclick]       = { NULL,NULL,LclickTexW,LclickTexH };
@@ -23,6 +25,7 @@ void C_Ui::Init(int a_hp)
 	m_frame = NULL;
 	m_colorChanger = ColorChanger;
 	m_rec[Ui::Timer] = { NULL,NULL,TimerW,TimerH };
+	m_rec[Ui::BreakNumber] = { NULL,NULL,TimerW,TimerH };
 	m_nowHp = a_hp;
 	m_lag = NULL;
 }
@@ -91,6 +94,32 @@ void C_Ui::UpdateTimer()
 		auto l_traMat = Math::Matrix::CreateTranslation(m_pos[Ui::Timer].x + (DistTimer * l_i), m_pos[Ui::Timer].y, Def::Vec.z);
 		auto l_scaMat = Math::Matrix::CreateScale(m_scal[Ui::Timer].x);
 		m_timerMat[l_i] = l_scaMat * l_traMat;
+	}
+}
+
+void C_Ui::DrawBreakNum()
+{
+	for (size_t l_i = NULL; l_i < Digit::DigitMax; ++l_i)
+	{
+		SHADER.m_spriteShader.SetMatrix(m_breMat[l_i]);
+		SHADER.m_spriteShader.DrawTex(m_pBreNumTex, NULL, NULL, &m_breRec[l_i], &m_color[Ui::BreakNumber]);
+	}
+}
+
+void C_Ui::UpdateBreakNum()
+{
+	auto l_timer = SCENE.GetBreakNumber();
+	auto l_hundred = l_timer / 100;
+	auto l_teen = (l_timer / 10) % 10;
+	auto l_one = l_timer % 10;
+	m_breRec[Digit::Hundreds] = { TimerW * l_hundred, NULL, TimerW, TimerH };
+	m_breRec[Digit::Tens] = { TimerW * l_teen, NULL, TimerW, TimerH };
+	m_breRec[Digit::Ones] = { TimerW * l_one, NULL, TimerW, TimerH };
+	for (size_t l_i = NULL; l_i < Digit::DigitMax; ++l_i)
+	{
+		auto l_traMat = Math::Matrix::CreateTranslation(m_pos[Ui::BreakNumber].x + (DistTimer * l_i) + 200, m_pos[Ui::BreakNumber].y, Def::Vec.z);
+		auto l_scaMat = Math::Matrix::CreateScale(m_scal[Ui::BreakNumber].x);
+		m_breMat[l_i] = l_scaMat * l_traMat;
 	}
 }
 
@@ -200,10 +229,11 @@ void C_Ui::DownHp()
 	m_nowHp--;
 }
 
-void C_Ui::SetTex(KdTexture* a_pTex, KdTexture* a_plClickTex, KdTexture* a_pTimerTex, KdTexture* a_pHpTex)
+void C_Ui::SetTex(KdTexture* a_pTex, KdTexture* a_plClickTex, KdTexture* a_pTimerTex, KdTexture* a_pHpTex, KdTexture* a_pBreNumTex)
 {
 	m_pTex       = a_pTex;
 	m_plClickTex = a_plClickTex;
 	m_pTimerTex  = a_pTimerTex;
 	m_pHpTex     = a_pHpTex;
+	m_pBreNumTex = a_pBreNumTex;
 }

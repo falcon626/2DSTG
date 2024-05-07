@@ -35,6 +35,7 @@ void Scene::Draw2D()
 				if (m_player.Timer() > 19) m_cloud->Draw();
 				if (breakNum > 19)m_cloud->Draw();
 				m_ui->DrawTimer();
+				m_ui->DrawBreakNum();
 			}
 			if (m_bUpdateFlg)
 			{
@@ -89,6 +90,7 @@ void Scene::Update()
 			if (m_bUpdateFlg)
 			{
 				m_cloud->Update();
+				m_ui->UpdateBreakNum();
 				m_ui->UpdateTimer();
 				m_ui->UpdateHp();
 				m_player.Update(m_mouse);
@@ -356,7 +358,8 @@ void Scene::Init()
 	m_timerTex.Load("texture/numbers.png");
 	m_hpTex.Load("texture/backTexture/hp.png");
 	m_textTex.Load("texture/textResult.png");
-	m_ui->SetTex(&m_explTex, &m_lClickTex,&m_timerTex,&m_hpTex);
+	m_breNumTex.Load("texture/number.png");
+	m_ui->SetTex(&m_explTex, &m_lClickTex,&m_timerTex,&m_hpTex,&m_breNumTex);
 	m_ui->Init();
 	m_explFlg = false;
 	m_bUpdateFlg = false;
@@ -365,8 +368,8 @@ void Scene::Init()
 	m_number[1]=std::make_shared<C_Ui>();
 	m_number[0]->SetTextTex(&m_textTex);
 	m_number[1]->SetTextTex(&m_textTex);
-	m_number[0]->SetTex(&m_explTex, &m_lClickTex, &m_timerTex, &m_hpTex);
-	m_number[1]->SetTex(&m_explTex, &m_lClickTex, &m_timerTex, &m_hpTex);
+	m_number[0]->SetTex(&m_explTex, &m_lClickTex, &m_timerTex, &m_hpTex,&m_breNumTex);
+	m_number[1]->SetTex(&m_explTex, &m_lClickTex, &m_timerTex, &m_hpTex,&m_breNumTex);
 	m_number[0]->InitNumber(200);
 	m_number[1]->InitNumber(-100);
 
@@ -389,6 +392,7 @@ void Scene::Release()
 	m_timerTex. Release();
 	m_backTex.  Release();
 	m_eneBulletTex.Release();
+	m_breNumTex.Release();
 }
 
 void Scene::ImGuiUpdate()
@@ -433,6 +437,11 @@ std::vector<std::shared_ptr<C_Bullet>> Scene::GetBulletList()
 int Scene::Timer()
 {
 	return (m_oneStageTime * m_stageNum) - m_player.Timer();
+}
+
+int Scene::GetBreakNumber()
+{
+	return breakNum;
 }
 
 void Scene::Hit()
