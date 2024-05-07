@@ -2,7 +2,7 @@
 #include "Scene.h"
 #include "Utility.h"
 
-void C_Ui::Init()
+void C_Ui::Init(int a_hp)
 {
 	m_pos.fill(Math::Vector2::Zero);
 	m_scal.fill(Math::Vector2::One);
@@ -23,7 +23,7 @@ void C_Ui::Init()
 	m_frame = NULL;
 	m_colorChanger = ColorChanger;
 	m_rec[Ui::Timer] = { NULL,NULL,TimerW,TimerH };
-	m_nowHp = HpNum;
+	m_nowHp = a_hp;
 	m_lag = NULL;
 }
 
@@ -137,9 +137,33 @@ void C_Ui::UpdateNumber(int a_num)
 
 void C_Ui::DrawHp()
 {
-	if (m_nowHp==3)
+	if (m_nowHp == HpNum)
 	{
 		for (size_t l_i = NULL; l_i < HpNum; ++l_i)
+		{
+			SHADER.m_spriteShader.SetMatrix(m_hpMat[l_i]);
+			SHADER.m_spriteShader.DrawTex(m_pHpTex, NULL, NULL, &m_rec[Ui::Hp], &m_color[Ui::Hp]);
+		}
+	}
+	if (m_nowHp == 5)
+	{
+		for (size_t l_i = NULL; l_i < 5; ++l_i)
+		{
+			SHADER.m_spriteShader.SetMatrix(m_hpMat[l_i]);
+			SHADER.m_spriteShader.DrawTex(m_pHpTex, NULL, NULL, &m_rec[Ui::Hp], &m_color[Ui::Hp]);
+		}
+	}
+	if (m_nowHp == 4)
+	{
+		for (size_t l_i = NULL; l_i < 4; ++l_i)
+		{
+			SHADER.m_spriteShader.SetMatrix(m_hpMat[l_i]);
+			SHADER.m_spriteShader.DrawTex(m_pHpTex, NULL, NULL, &m_rec[Ui::Hp], &m_color[Ui::Hp]);
+		}
+	}
+	if (m_nowHp==3)
+	{
+		for (size_t l_i = NULL; l_i < 3; ++l_i)
 		{
 			SHADER.m_spriteShader.SetMatrix(m_hpMat[l_i]);
 			SHADER.m_spriteShader.DrawTex(m_pHpTex, NULL, NULL, &m_rec[Ui::Hp], &m_color[Ui::Hp]);

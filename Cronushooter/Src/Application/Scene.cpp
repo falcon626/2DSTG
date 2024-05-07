@@ -3,6 +3,7 @@
 #include "Utility.h"
 #include "title.h"
 #include "back.h"
+#include "bullet.h"
 #include "cloud.h"
 #include "ui.h"
 #include "animation.h"
@@ -26,10 +27,13 @@ void Scene::Draw2D()
 			}
 			if (m_directorCount > 60)
 			{
+				for (decltype(auto) l_bullet : m_bulletList) l_bullet->DrawEne();
 				for (decltype(auto) l_eneLis : m_enemyList) l_eneLis->Draw();
 				for (decltype(auto) l_eneLis : m_lineEnemyList) l_eneLis->DrawLineEnemy();
-				for (decltype(auto) l_anima : m_anima) l_anima->DrawBra();
+				for (decltype(auto) l_anima : m_anima) { l_anima->DrawBra(); l_anima->DrawHit(); }
 				m_player.Draw();
+				if (m_player.Timer() > 19) m_cloud->Draw();
+				if (breakNum > 19)m_cloud->Draw();
 				m_ui->DrawTimer();
 			}
 			if (m_bUpdateFlg)
@@ -58,6 +62,7 @@ void Scene::Update()
 	case Screen::Scene::INITIAL:
 		if (!m_bCut)
 		{
+			m_time = NULL;
 			m_back->UpdateTitle();
 			m_nextScene = m_title->Update(m_mouse);
 		}
@@ -70,6 +75,8 @@ void Scene::Update()
 			m_directorCount++;
 			if (m_directorCount == Def::AnNull)
 			{
+				m_ui->Init();
+				m_player.Init();
 				m_cloud->MatrixSet();
 				m_player.MatrixSet();
 				//EnemyPop();
@@ -86,19 +93,20 @@ void Scene::Update()
 				m_ui->UpdateHp();
 				m_player.Update(m_mouse);
 				UpdateGame();
+				for (decltype(auto) l_bullet : m_bulletList) l_bullet->Update({static_cast<float>(m_mouse.x),static_cast<float>(m_mouse.y) });
 				for (decltype(auto) l_eneLis : m_enemyList) l_eneLis->Update();
 				for (decltype(auto) l_eneLis : m_lineEnemyList) l_eneLis->UpdateLineEnemy(m_player.GetPos());
-				for (decltype(auto) l_anima : m_anima) l_anima->UpdateBra();
+				for (decltype(auto) l_anima : m_anima) { l_anima->UpdateBra(); l_anima->UpdateHit(); }
 				m_player.CheckHitBullet();
 				m_player.CheckHitEnemy();
-				if (m_ui->GetHp() <= NULL)m_nextScene = Screen::Scene::RESULT;
+				if (m_ui->GetHp() <= NULL) m_nextScene = Screen::Scene::RESULT;
 			}
 		}
 		break;
 	case Screen::Scene::PAUSE:
 		break;
 	case Screen::Scene::RESULT:
-		m_number[0]->UpdateNumber(m_player.Timer());
+		m_number[0]->UpdateNumber(m_time);
 		m_number[1]->UpdateNumber(breakNum);
 		break;
 	}
@@ -111,7 +119,13 @@ void Scene::Update()
 
 	if (m_nowScene != m_nextScene)
 	{
-		if(m_cutCount==NULL)m_cut->InitCut();
+		if (m_cutCount == NULL)
+		{
+			m_time = m_player.Timer();
+			m_score += m_time + breakNum;
+			m_cut->InitCut();
+			breakNum = NULL;
+		}
 		m_bCut = true;
 		m_directorCount = NULL;
 	}
@@ -121,15 +135,22 @@ void Scene::Update()
 		if (m_cutCount > SceneSwitchCount) m_nowScene = m_nextScene;
 		if (m_cutCount > SceneCutEndCount)
 		{
-			if (m_nowScene == Screen::Scene::GAME) m_player.Init();
-			m_bCut = m_cut->GetAlpFlg();
+			if (m_nowScene == Screen::Scene::GAME)
+			{
+				m_ui->Init();
+				m_player.Init();
+			}
+			else  DeleteEnemy();
 			m_cut->SetPopFlg(m_bCut);
+			m_bCut = m_cut->GetAlpFlg();
 		}
 		m_cutCount++;
+		if (m_cutCount > 80)m_bCut = false;
 	}
 	else m_cutCount = NULL;
 
-	if (Key::IsPushing(Key::Q)) debag = true;
+	if (Key::IsPushing(Key::Q) && Key::IsPushing(Key::L_Shift)) debag = true;
+	if (Key::IsPushing(Key::Q) && Key::IsPushing(Key::L_Ctrl)) debag = false;
 
 	m_mat = Math::Matrix::CreateTranslation( m_mouse.x,m_mouse.y , Def::Vec.z);
 }
@@ -160,8 +181,7 @@ void Scene::UpdateGame()
 		}
 		else it++;
 	}
-
-	if (rand() % 100 < 1)
+	if (rand() % 1000 < m_enePop)
 	{
 		std::shared_ptr<C_Enemy> enemy;
 		enemy = std::make_shared<C_Enemy>();
@@ -172,31 +192,58 @@ void Scene::UpdateGame()
 		m_enemyList.emplace_back(enemy);
 	}
 
-	it = m_lineEnemyList.begin();
-	auto l_count = NULL;
-	while (it != m_lineEnemyList.end())
+	if (m_player.Timer() > 2)
 	{
-		if ((*it)->GetLineTeamAlive() == false)
+		it = m_lineEnemyList.begin();
+		auto l_count = NULL;
+		while (it != m_lineEnemyList.end())
 		{
-			++breakNum;
-			it = m_lineEnemyList.erase(it);
+			if ((*it)->GetLineTeamAlive() == false)
+			{
+				++breakNum;
+				std::shared_ptr<C_Anima> anima;
+				anima = std::make_shared<C_Anima>();
+				anima->SetTex(&m_hitTex, &m_breTex);
+				anima->HitAnimaStart((*it)->GetLinePos());
+				m_anima.emplace_back(anima);
+				it = m_lineEnemyList.erase(it);
+			}
+			else
+			{
+				it++;
+				l_count++;
+			}
 		}
-		else
+		if (rand() % 1000 < m_lineEnePop && l_count < m_lineEnePopLim)
 		{
-			it++;
-			l_count++;
+			std::shared_ptr<C_Enemy> enemy;
+			enemy = std::make_shared<C_Enemy>();
+
+			enemy->InitLineEnemy(m_player.GetPos());
+			enemy->SetTexture(&m_lineEnemyTex);
+
+			m_lineEnemyList.emplace_back(enemy);
 		}
 	}
 
-	if (rand() % 100 < 1 && l_count < 3)
+	if (m_player.Timer() > 7)
 	{
-		std::shared_ptr<C_Enemy> enemy;
-		enemy = std::make_shared<C_Enemy>();
+		if (rand() % 1000 < m_bulletEnePop)
+		{
+			auto bullet = std::make_shared<C_Bullet>();
 
-		enemy->InitLineEnemy(m_player.GetPos());
-		enemy->SetTexture(&m_lineEnemyTex);
+			bullet->Init();
+			bullet->SetTexture(&m_eneBulletTex);
+			bullet->Shot({ m_player.GetPos().x,Screen::HalfHeight + 8 }, { NULL,-5 });
 
-		m_lineEnemyList.emplace_back(enemy);
+			m_bulletList.emplace_back(bullet);
+		}
+	}
+
+	if (breakNum > 9)
+	{
+		m_lineEnePopLim = 5;
+		m_bulletEnePop = 150;
 	}
 }
 
@@ -222,9 +269,45 @@ void Scene::EnemyPop()
 	}
 }
 
+void Scene::DeleteEnemy()
+{
+	auto it = m_enemyList.begin();
+
+	while (it != m_enemyList.end())
+	{
+		it = m_enemyList.erase(it);
+	}
+
+	auto lit = m_lineEnemyList.begin();
+
+	while (lit != m_lineEnemyList.end())
+	{
+		lit = m_lineEnemyList.erase(lit);
+	}
+
+	auto bit = m_bulletList.begin();
+
+	while (bit!=m_bulletList.end())
+	{
+		bit = m_bulletList.erase(bit);
+	}
+
+	m_enePop = 10;
+	m_lineEnePop = 5;
+	m_lineEnePopLim = 3;
+	m_bulletEnePop = 100;
+}
+
 void Scene::Init()
 {
+
+	srand(timeGetTime());
 	m_bKey.fill(false);
+
+	m_enePop = 10;
+	m_lineEnePop = 5;
+	m_lineEnePopLim = 3;
+	m_bulletEnePop = 100;
 
 	m_tex.Load("texture/cursor/cursor.png");
 
@@ -242,8 +325,9 @@ void Scene::Init()
 	m_back->SetTexture(&m_backTex, &m_filTex);
 
 	m_playerTex.Load("texture/fly.png");
+	m_playerHitTex.Load("texture/strawberry_moon.png");
 	m_player.Init();
-	m_player.SetTexture(&m_playerTex);
+	m_player.SetTexture(&m_playerTex,&m_playerHitTex);
 	m_player.SetBulletTextrure(&m_bulletTex);
 	m_player.SetOwner(this);
 
@@ -251,6 +335,7 @@ void Scene::Init()
 	m_lineEnemyTex.Load("texture/1enemy.png");
 
 	m_bulletTex.Load("texture/nc.png");
+	m_eneBulletTex.Load("texture/Enebullet.png");
 
 
 	m_nowScene = m_nextScene = Screen::Scene::INITIAL;
@@ -285,6 +370,8 @@ void Scene::Init()
 	m_number[0]->InitNumber(200);
 	m_number[1]->InitNumber(-100);
 
+	m_score = NULL;
+
 	m_hitTex.Load("texture/hitEf.png");
 	m_breTex.Load("texture/explosion.png");
 }
@@ -301,6 +388,7 @@ void Scene::Release()
 	m_lClickTex.Release();
 	m_timerTex. Release();
 	m_backTex.  Release();
+	m_eneBulletTex.Release();
 }
 
 void Scene::ImGuiUpdate()
@@ -335,6 +423,11 @@ std::vector<std::shared_ptr<C_Enemy>> Scene::GetEnemyList()
 std::vector<std::shared_ptr<C_Enemy>> Scene::GetLineEnemyList()
 {
 	return m_lineEnemyList;
+}
+
+std::vector<std::shared_ptr<C_Bullet>> Scene::GetBulletList()
+{
+	return m_bulletList;
 }
 
 int Scene::Timer()

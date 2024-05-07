@@ -19,11 +19,11 @@ public:
 	const bool GetAlive();
 	void Hit();
 
-	const Math::Vector2 GetLinePos(int a_i);
+	const Math::Vector2 GetLinePos();
 	const float GetLineRadius();
-	const bool GetLineAlive(int a_i);
+	const bool GetLineAlive();
 	const bool GetLineTeamAlive();
-	void LineHit(int a_i);
+	void LineHit();
 
 	void MatrixSet();
 
@@ -50,15 +50,11 @@ private:
 	int m_lag=NULL;
 	bool m_bInScreen;
 	std::array<Math::Matrix, AllRange> m_mat;
-	std::array<Math::Matrix, Team> m_lineMat;
 	std::array<KdTexture*, AllRange> m_pTex;
 	std::array<Math::Vector2, AllRange> m_pos;
-	std::array<Math::Vector2, Team> m_linePos;
 	std::array<bool, AllRange> m_eAlive;
-	std::array<bool, Team> m_eLineAlive;
 	std::array<Math::Vector2, AllRange> m_move;
 	std::array<int, AllRange> m_hp;
-	std::array<int, Team> m_lineHp;
 	const float Scale=1.f;
 	const float TEX_RADIUS = 32.0f;
 	const float TEX_LINERAD = 64.0f;

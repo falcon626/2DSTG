@@ -5,6 +5,11 @@ public:
 	C_Cloud();
 	~C_Cloud(){}
 
+	auto GetAlpFlg() { return m_bFlg; }
+
+	void SetTex(KdTexture* a_pTex) { m_pTex = a_pTex; }
+	void SetPopFlg(bool a_bFlg) { m_bFlg = true; }
+
 	void Init();
 	void InitCut();
 	void Draw();
@@ -13,11 +18,6 @@ public:
 	void UpdateCut();
 
 	void MatrixSet();
-
-	void SetTex(KdTexture* a_pTex) { m_pTex = a_pTex; }
-	void SetPopFlg(bool a_bFlg) { m_bFlg = a_bFlg; }
-
-	auto GetAlpFlg() { return m_bFlg; }
 
 private:
 	static const int CloudNum = 250;
@@ -41,4 +41,5 @@ private:
 	std::array <int, CloudNum>           m_cloudPattern;
 	float m_alp;
 	bool m_bFlg;
+	int m_lag;
 };

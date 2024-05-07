@@ -6,7 +6,7 @@ public:
 	C_Ui() {}
 	~C_Ui() {}
 
-	void Init();
+	void Init(int a_hp=3);
 	void DrawExplanation();
 	bool UpdateExplanation();
 
@@ -43,7 +43,7 @@ private:
 	const int DistTimer = 50;
 	const Math::Vector2 LclickPos = { 250,-185 };
 	const Math::Color DefLclickColor = { 0,0,0,AlpCrr };
-	static const int HpNum = 3;
+	static const int HpNum = 6;
 
 	enum Ui
 	{

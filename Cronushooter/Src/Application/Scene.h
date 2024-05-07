@@ -7,6 +7,7 @@ class C_Back;
 class C_Cloud;
 class C_Ui;
 class C_Anima;
+class C_Bullet;
 
 class Scene
 {
@@ -49,6 +50,7 @@ private:
 	int m_stageNum = 3;
 
 	KdTexture m_playerTex;
+	KdTexture m_playerHitTex;
 	C_Player m_player;
 	KdTexture m_bulletTex;
 	std::vector<std::shared_ptr<C_Enemy>> m_enemyList;
@@ -67,7 +69,20 @@ private:
 	std::vector<std::string> m_strPass;
 	std::array<bool, 100> m_bKey;
 
+	int m_score;
+
+	int m_time;
+
+	int m_enePop;
+	int m_lineEnePop;
+	int m_lineEnePopLim;
+	int m_bulletEnePop;
+
 	std::array<std::shared_ptr<C_Ui>, 2> m_number;
+
+	std::vector<std::shared_ptr<C_Bullet>> m_bulletList;
+	KdTexture m_eneBulletTex;
+
 public:
 
 	void Init();
@@ -77,6 +92,8 @@ public:
 	void Update();
 
 	void EnemyPop();
+
+	void DeleteEnemy();
 
 	void UpdateGame();
 
@@ -92,6 +109,8 @@ public:
 
 	std::vector<std::shared_ptr<C_Enemy>> GetEnemyList();
 	std::vector<std::shared_ptr<C_Enemy>> GetLineEnemyList();
+
+	std::vector<std::shared_ptr<C_Bullet>> GetBulletList();
 
 	std::shared_ptr<C_Anima> GetAnima();
 
