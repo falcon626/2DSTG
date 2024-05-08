@@ -8,6 +8,8 @@ class C_Cloud;
 class C_Ui;
 class C_Anima;
 class C_Bullet;
+class C_Text;
+class C_Option;
 
 class Scene
 {
@@ -67,13 +69,17 @@ private:
 	KdTexture m_textTex;
 	KdTexture m_breNumTex;
 
+	KdTexture m_escTex;
+
+	Math::Rectangle m_escRec = { 0, 5, 80, 50 };
+
 	std::vector<std::string> m_strPass;
-	std::array<bool, 100> m_bKey;
+
+	float m_vol;
 
 	int m_score;
 
 	int m_time;
-
 	int m_enePop;
 	int m_lineEnePop;
 	int m_lineEnePopLim;
@@ -83,6 +89,20 @@ private:
 
 	std::vector<std::shared_ptr<C_Bullet>> m_bulletList;
 	KdTexture m_eneBulletTex;
+
+	std::shared_ptr<C_Text> m_txt;
+	KdTexture m_txtTex;
+	KdTexture m_markTex;
+	KdTexture m_pngTex;
+	KdTexture m_texTex;
+
+	std::shared_ptr<C_Option> m_option;
+	KdTexture m_loadTex;
+	KdTexture m_arrowTex;
+
+	std::shared_ptr<KdSoundEffect> m_breSe;
+	std::shared_ptr<KdSoundInstance> m_breInsSe;
+
 
 public:
 
@@ -99,6 +119,8 @@ public:
 	void UpdateGame();
 
 	void Draw2D();
+
+	void DrawOption();
 
 	void ImGuiUpdate();
 

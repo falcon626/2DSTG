@@ -20,6 +20,7 @@ namespace Def
 {
 	const Math::Color Color = { 1.f,1.f,1.f,1.f };
 	const Math::Vector3 Vec = Math::Vector3::Zero;
+	const Math::Matrix Mat  = Math::Matrix::Identity;
 	const float AnNull = 1.f;
 }
 

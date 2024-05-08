@@ -6,6 +6,7 @@ public:
 
 	void SetTexture(KdTexture* a_pTex, KdTexture* a_pfilTex);
 	void Init();
+	void DrawFilter();
 	
 	void DrawTitle();
 	void UpdateTitle();

@@ -175,6 +175,122 @@ void C_Player::Update(const POINT a_mouse)
 	m_mat = Math::Matrix::CreateTranslation(m_pos.x, m_pos.y, Def::Vec.z);
 }
 
+void C_Player::UpdatePlayerTitle(const POINT a_mouse)
+{
+	m_move.y = NormalSpd;
+	if (Key::IsPushing(Key::A))
+	{
+		if (Key::IsPushing(Key::L_Shift))
+		{
+			m_move.x = SlowSpd;
+			m_radi = 8;
+			m_bSlow = true;
+		}
+		else
+		{
+			m_move.x = NormalSpd;
+			m_radi = PlayerRad;
+			m_bSlow = false;
+		}
+		m_pos.x -= m_move.x;
+		m_bTime = true;
+		m_timer->Resume();
+	}
+	else if (Key::IsPushing(Key::D))
+	{
+		if (Key::IsPushing(Key::L_Shift))
+		{
+			m_move.x = SlowSpd;
+			m_radi = 8;
+			m_bSlow = true;
+		}
+		else
+		{
+			m_move.x = NormalSpd;
+			m_radi = PlayerRad;
+			m_bSlow = false;
+		}
+		m_pos.x += m_move.x;
+		m_bTime = true;
+		m_timer->Resume();
+	}
+	else
+	{
+		m_bTime = false;
+		m_timer->Stop();
+	}
+	m_pos.y += m_move.y;
+	if (m_pos.x <= -Screen::HalfWidth + PlayerRad)m_pos.x = -Screen::HalfWidth + PlayerRad;
+	if (m_pos.x >= Screen::HalfWidth - PlayerRad)m_pos.x = Screen::HalfWidth - PlayerRad;
+	if (m_pos.y >= Screen::HalfHeight + PlayerRad)
+	{
+		m_pos.x = rand() % 1217 - 608;
+		m_pos.y = -Screen::HalfHeight - PlayerRad;
+	}
+	if (Key::IsPushing(Key::L_Click) && m_bulletInterval <= 0)
+	{
+		m_bulletInterval = 15;
+		const float x = a_mouse.x - m_pos.x;
+		const float y = a_mouse.y - m_pos.y;
+		const float radian = atan2(y, x);
+		C_Bullet* tempBullet = new C_Bullet();
+		tempBullet->Init();
+		tempBullet->SetTexture(m_pBulletTex);
+		tempBullet->Shot(m_pos, radian);
+		m_bulletList.emplace_back(tempBullet);
+	}
+	else m_bulletInterval--;
+
+	if (Key::IsPushing(Key::R_Click) && m_bulletReverseInterval <= 0)
+	{
+		m_bulletReverseInterval = 30;
+		const float x = a_mouse.x - m_pos.x;
+		const float y = a_mouse.y - m_pos.y;
+		const float radian = atan2(y, x);
+		C_Bullet* tempBullet = new C_Bullet();
+		tempBullet->Init();
+		tempBullet->SetTexture(m_pBulletTex);
+		tempBullet->Shot(m_pos, radian);
+		m_bulletReverseList.emplace_back(tempBullet);
+	}
+	else m_bulletReverseInterval--;
+
+	for (size_t b = NULL; b < m_bulletList.size(); ++b) m_bulletList[b]->Update(m_bTime);
+	for (size_t b = NULL; b < m_bulletReverseList.size(); ++b) m_bulletReverseList[b]->UpdateReverse(m_bTime);
+
+	std::vector<C_Bullet*>::iterator it;
+	it = m_bulletList.begin();
+	while (it != m_bulletList.end())
+	{
+		const bool bAlive = (*it)->GetAlive();
+		if (!bAlive)
+		{
+			delete (*it);
+			it = m_bulletList.erase(it);
+		}
+		else it++;
+	}
+	auto reit = m_bulletReverseList.begin();
+	while (reit != m_bulletReverseList.end())
+	{
+		const bool bAlive = (*reit)->GetAlive();
+		if (!bAlive)
+		{
+			delete (*reit);
+			reit = m_bulletReverseList.erase(reit);
+		}
+		else reit++;
+	}
+	if (m_muteki != NULL)
+	{
+		m_muteki--;
+		m_color.A(0.5f);
+	}
+	else m_color = Def::Color;
+	m_frame++;
+	m_mat = Math::Matrix::CreateTranslation(m_pos.x, m_pos.y, Def::Vec.z);
+}
+
 void C_Player::Draw()
 {
 	for (int b = NULL; b < m_bulletList.size(); ++b)
@@ -383,6 +499,23 @@ void C_Player::SetBulletTextrure(KdTexture* a_pTex)
 void C_Player::SetOwner(Scene* a_pOwner)
 {
 	m_pOwner = a_pOwner;
+}
+
+void C_Player::DeleteBullet()
+{
+	auto it = m_bulletList.begin();
+	while (it != m_bulletList.end())
+	{
+		delete (*it);
+		it = m_bulletList.erase(it);
+	}
+
+	auto reit = m_bulletReverseList.begin();
+	while (reit != m_bulletReverseList.end())
+	{
+		delete (*reit);
+		reit = m_bulletReverseList.erase(reit);
+	}
 }
 
 Math::Vector2 C_Player::GetPos()

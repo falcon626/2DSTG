@@ -7,6 +7,8 @@
 #include "cloud.h"
 #include "ui.h"
 #include "animation.h"
+#include "text.h"
+#include "option.h"
 
 void Scene::Draw2D()
 {
@@ -14,6 +16,8 @@ void Scene::Draw2D()
 	{
 	case Screen::Scene::INITIAL:
 		m_back->DrawTitle();
+		m_player.Draw();
+		m_back->DrawFilter();
 		m_title->Draw();
 		break;
 	case Screen::Scene::GAME:
@@ -44,8 +48,16 @@ void Scene::Draw2D()
 		}
 		break;
 	case Screen::Scene::PAUSE:
+		m_back->DrawGame();
+		m_back->DrawFilter();
+		DrawOption();
+		m_txt->Draw();
+		m_option->Draw();
 		break;
 	case Screen::Scene::RESULT:
+		m_back->DrawGame();
+		m_cloud->Draw();
+		m_back->DrawFilter();
 		m_number[0]->DrawNumber(true);
 		m_number[1]->DrawNumber();
 		break;
@@ -53,6 +65,14 @@ void Scene::Draw2D()
 	if (m_bCut) m_cut->DrawCut();
 	SHADER.m_spriteShader.SetMatrix(m_mat);
 	SHADER.m_spriteShader.DrawTex(&m_tex,Math::Rectangle(0,0,16,16),1.f);
+}
+
+void Scene::DrawOption()
+{
+	SHADER.m_spriteShader.SetMatrix(Def::Mat);
+	SHADER.m_spriteShader.DrawTex(&m_escTex, -Screen::HalfWidth + 55, Screen::HalfHeight - 50, &m_escRec, &Def::Color);
+	//SHADER.m_spriteShader.DrawTex(&m_arrowTex, , -Screen::HalfHeight+40 , &m_escRec, &Def::Color);
+
 }
 
 void Scene::Update()
@@ -65,6 +85,7 @@ void Scene::Update()
 		{
 			m_time = NULL;
 			m_back->UpdateTitle();
+			m_player.UpdatePlayerTitle(m_mouse);
 			m_nextScene = m_title->Update(m_mouse);
 		}
 		break;
@@ -106,8 +127,14 @@ void Scene::Update()
 		}
 		break;
 	case Screen::Scene::PAUSE:
+		m_back->UpdateGame();
+		m_txt->Update();
+		m_option->Update(m_mouse,m_txt->GetPass());
+		if (!m_option->GetCanLoad()) m_player.SetTexture(m_option->GetTempTex(),&m_hitTex);
 		break;
 	case Screen::Scene::RESULT:
+		m_back->UpdateGame();
+		m_cloud->Update();
 		m_number[0]->UpdateNumber(m_time);
 		m_number[1]->UpdateNumber(breakNum);
 		break;
@@ -126,7 +153,6 @@ void Scene::Update()
 			m_time = m_player.Timer();
 			m_score += m_time + breakNum;
 			m_cut->InitCut();
-			breakNum = NULL;
 		}
 		m_bCut = true;
 		m_directorCount = NULL;
@@ -139,6 +165,7 @@ void Scene::Update()
 		{
 			if (m_nowScene == Screen::Scene::GAME)
 			{
+				breakNum = NULL;
 				m_ui->Init();
 				m_player.Init();
 			}
@@ -173,6 +200,7 @@ void Scene::UpdateGame()
 	{
 		if ((*it)->GetAlive() == false)
 		{
+			m_breInsSe->Play();
 			++breakNum;
 			std::shared_ptr<C_Anima> anima;
 			anima = std::make_shared<C_Anima>();
@@ -202,6 +230,7 @@ void Scene::UpdateGame()
 		{
 			if ((*it)->GetLineTeamAlive() == false)
 			{
+				m_breInsSe->Play();
 				++breakNum;
 				std::shared_ptr<C_Anima> anima;
 				anima = std::make_shared<C_Anima>();
@@ -294,6 +323,8 @@ void Scene::DeleteEnemy()
 		bit = m_bulletList.erase(bit);
 	}
 
+	m_player.DeleteBullet();
+
 	m_enePop = 10;
 	m_lineEnePop = 5;
 	m_lineEnePopLim = 3;
@@ -304,7 +335,13 @@ void Scene::Init()
 {
 
 	srand(timeGetTime());
-	m_bKey.fill(false);
+
+	m_breSe = std::make_shared<KdSoundEffect>();
+
+	m_breSe->Load("Sound/damage.wav");
+	m_breInsSe = m_breSe->CreateInstance(false);
+	m_vol = 0.5f;
+	m_breInsSe->SetVolume(m_vol);
 
 	m_enePop = 10;
 	m_lineEnePop = 5;
@@ -319,6 +356,8 @@ void Scene::Init()
 	m_startTex.Load("texture/cursor/START.png");
 	m_optionTex.Load("texture/cursor/OPTION.png");
 	m_title->SetTexture(&m_titleTex,&m_startTex,&m_optionTex);
+
+	m_escTex.Load("texture/L00bkJ9fOafwGUG1715197114_1715197116.png");
 
 	m_back = std::make_unique<C_Back>();
 	m_back->Init();
@@ -377,6 +416,20 @@ void Scene::Init()
 
 	m_hitTex.Load("texture/hitEf.png");
 	m_breTex.Load("texture/explosion.png");
+
+	m_txt = std::make_shared<C_Text>();
+	m_txtTex.Load("texture/alphabet.png");
+	m_markTex.Load("texture/VOJghqsEY0pb35e1715187123_1715187124.png");
+	m_pngTex.Load("texture/4lI7xuTOnubV7Hx1715191277_1715191279.png");
+	m_texTex.Load("texture/DuxwAPe1KHeM5eZ1715191194_1715191195.png");
+	m_txt->Init();
+	m_txt->SetTex(&m_txtTex,&m_timerTex,&m_markTex);
+	m_txt->SetCuiTex(&m_pngTex,&m_texTex);
+
+	m_option = std::make_shared<C_Option>();
+	m_loadTex.Load("texture/load.png");
+	m_option->SetTex(&m_loadTex);
+	m_option->Init();
 }
 
 void Scene::Release()
@@ -393,6 +446,7 @@ void Scene::Release()
 	m_backTex.  Release();
 	m_eneBulletTex.Release();
 	m_breNumTex.Release();
+	m_textTex.Release();
 }
 
 void Scene::ImGuiUpdate()

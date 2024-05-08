@@ -13,6 +13,7 @@ public:
 
 	void Init();
 	void Update(const POINT a_mouse);
+	void UpdatePlayerTitle(const POINT a_mouse);
 	void Draw();
 
 	void CheckHitBullet();
@@ -27,6 +28,8 @@ public:
 	void SetTexture(KdTexture* a_pTex,KdTexture* a_pHitTex);
 	void SetBulletTextrure(KdTexture* a_pTex);
 	void SetOwner(Scene* a_pOwner);
+
+	void DeleteBullet();
 
 	Math::Vector2 GetPos();
 

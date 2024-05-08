@@ -15,12 +15,16 @@ void C_Back::Init()
 	m_filcolor.A(FilAlp);
 }
 
+void C_Back::DrawFilter()
+{
+	SHADER.m_spriteShader.SetMatrix(m_filmat);
+	SHADER.m_spriteShader.DrawTex(m_pfilTex, Def::Vec.x, Def::Vec.y, &FullRec, &m_filcolor);
+}
+
 void C_Back::DrawTitle()
 {
 	SHADER.m_spriteShader.SetMatrix(m_mat);
 	SHADER.m_spriteShader.DrawTex(m_pTex, Def::Vec.x, Def::Vec.y, &FullRec, &m_color);
-	SHADER.m_spriteShader.SetMatrix(m_filmat);
-	SHADER.m_spriteShader.DrawTex(m_pfilTex, Def::Vec.x, Def::Vec.y, &FullRec, &m_filcolor);
 }
 
 void C_Back::UpdateTitle()
