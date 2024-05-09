@@ -48,8 +48,8 @@ private:
 	bool m_explFlg;
 	bool m_bUpdateFlg;
 	int m_directorCount;
-	int m_oneStageTime = 30;
-	int m_stageNum = 3;
+	int m_oneStageTime = 90;
+	int m_stageNum = 1;
 
 	KdTexture m_playerTex;
 	KdTexture m_playerHitTex;
@@ -95,13 +95,43 @@ private:
 	KdTexture m_markTex;
 	KdTexture m_pngTex;
 	KdTexture m_texTex;
+	KdTexture m_wavTex;
+	KdTexture m_sudTex;
+
 
 	std::shared_ptr<C_Option> m_option;
 	KdTexture m_loadTex;
-	KdTexture m_arrowTex;
+	KdTexture m_checkTex;
+	KdTexture m_tagTex;
+	KdTexture m_adTex;
+	KdTexture m_seTex;
 
+	Math::Rectangle m_a;
+	Math::Rectangle m_d;
+
+	std::shared_ptr<KdSoundEffect> m_bgm;
+	std::shared_ptr<KdSoundEffect> m_bgm1;
+	std::shared_ptr<KdSoundEffect> m_bgm2;
+	std::shared_ptr<KdSoundEffect> m_bgm3;
 	std::shared_ptr<KdSoundEffect> m_breSe;
 	std::shared_ptr<KdSoundInstance> m_breInsSe;
+	std::shared_ptr<KdSoundEffect> m_hitSe;
+	std::shared_ptr<KdSoundInstance> m_hitInsSe;
+
+	int m_lag;
+	int m_gal;
+	int m_i;
+
+	bool m_bAllCre;
+	KdTexture m_starTex;
+	Math::Matrix m_starMat;
+	Math::Vector2 m_starPos;
+	int m_star;
+
+	float m_y;
+	float m_Ay;
+	float m_Dy;
+	float m_ySpd;
 
 
 public:
@@ -120,7 +150,9 @@ public:
 
 	void Draw2D();
 
-	void DrawOption();
+	void DrawEsc();
+
+	void DrawPage();
 
 	void ImGuiUpdate();
 
@@ -131,6 +163,9 @@ public:
 	int GetBreakNumber();
 
 	void Hit();
+
+	void DrawStar();
+	void UpdateStar();
 
 	std::vector<std::shared_ptr<C_Enemy>> GetEnemyList();
 	std::vector<std::shared_ptr<C_Enemy>> GetLineEnemyList();

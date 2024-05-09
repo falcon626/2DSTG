@@ -6,7 +6,7 @@ public:
 	C_Ui() {}
 	~C_Ui() {}
 
-	void Init(int a_hp=4);
+	void Init(int a_hp=6);
 	void DrawExplanation();
 	bool UpdateExplanation();
 
@@ -18,7 +18,7 @@ public:
 
 	void InitNumber(float a_y=NULL);
 	void DrawNumber(bool a_b=false);
-	void UpdateNumber(int a_num);
+	void UpdateNumber(int a_num ,bool a_bFlg=false);
 
 	void DrawHp();
 	void UpdateHp();

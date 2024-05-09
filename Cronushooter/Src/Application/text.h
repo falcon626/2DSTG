@@ -6,7 +6,8 @@ public:
 	~C_Text() {}
 
 	void Init();
-	void Draw();
+	void DrawT();
+	void DrawS();
 	void Update();
 
 	void CreateStr();
@@ -18,7 +19,8 @@ public:
 	std::string GetPass();
 	
 	void SetTex(KdTexture* a_pTextTex, KdTexture* a_pNumberTex, KdTexture* a_pMarkTex);
-	void SetCuiTex(KdTexture* a_pPngTex, KdTexture* a_pTexTex);
+	void SetCuiTTex(KdTexture* a_pPngTex, KdTexture* a_pTexTex);
+	void SetCuiSTex(KdTexture* a_pWavTex, KdTexture* a_pSudTex);
 private:
 	std::string m_text;
 	std::vector<std::string> m_str;
@@ -28,6 +30,8 @@ private:
 	KdTexture* m_pMarkTex;
 	KdTexture* m_pTexTex;
 	KdTexture* m_pPngTex;
+	KdTexture* m_pSudTex;
+	KdTexture* m_pWavTex;
 
 	Math::Matrix m_cuiMat;
 

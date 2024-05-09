@@ -137,7 +137,7 @@ void C_Ui::DrawNumber(bool a_b)
 {
 	Math::Rectangle l_rec;
 	if (a_b) l_rec = { 0,0,155,80 };
-	else l_rec = { 155,0,410,80 };
+	else l_rec = { 155,0,185,80 };
 	for (size_t l_i = NULL; l_i < Digit::DigitMax; ++l_i)
 	{
 		SHADER.m_spriteShader.SetMatrix(m_timerMat[l_i]);
@@ -147,8 +147,13 @@ void C_Ui::DrawNumber(bool a_b)
 	SHADER.m_spriteShader.DrawTex(m_pTextTex, NULL, NULL, &l_rec, &m_color[Ui::Timer]);
 }
 
-void C_Ui::UpdateNumber(int a_num)
+void C_Ui::UpdateNumber(int a_num, bool a_bFlg)
 {
+	if (a_bFlg)
+	{
+		m_scal[Ui::Timer].x = 0.1f;
+		m_pos[Ui::Timer] = Math::Vector2{-Screen::HalfWidth + 200,m_pos[Ui::Timer].y};
+	}
 	auto l_hundred = a_num / 100;
 	auto l_teen = (a_num / 10) % 10;
 	auto l_one = a_num % 10;
@@ -161,7 +166,13 @@ void C_Ui::UpdateNumber(int a_num)
 		auto l_scaMat = Math::Matrix::CreateScale(m_scal[Ui::Timer].x);
 		m_timerMat[l_i] = l_scaMat * l_traMat;
 	}
-	m_texMat = Math::Matrix::CreateTranslation(300, m_pos[Ui::Timer].y, Def::Vec.z);
+	if (a_bFlg)
+	{
+		auto l_traMat = Math::Matrix::CreateTranslation(300, m_pos[Ui::Timer].y, Def::Vec.z);
+		auto l_scaMat = Math::Matrix::CreateScale(m_scal[Ui::Timer].x);
+		m_texMat = l_scaMat * l_traMat;
+	}
+	else m_texMat = Math::Matrix::CreateTranslation(300, m_pos[Ui::Timer].y, Def::Vec.z);
 }
 
 void C_Ui::DrawHp()

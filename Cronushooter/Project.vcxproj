@@ -162,6 +162,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="Src\Application\animation.h" />
     <ClInclude Include="Src\Application\back.h" />
+    <ClInclude Include="Src\Application\backGroundMusic.hpp" />
     <ClInclude Include="Src\Application\bullet.h" />
     <ClInclude Include="Src\Application\cloud.h" />
     <ClInclude Include="Src\Application\enemy.h" />

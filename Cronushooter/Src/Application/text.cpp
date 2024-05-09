@@ -8,13 +8,36 @@ void C_Text::Init()
 	m_j = NULL;
 }
 
-void C_Text::Draw()
+void C_Text::DrawT()
 {
 	Math::Rectangle l_rec = { 0,0,600,100 };
 	SHADER.m_spriteShader.SetMatrix(m_cuiMat);
 	SHADER.m_spriteShader.DrawTex(m_pTexTex, NULL, 75, &l_rec, &Def::Color);
 	l_rec = { 0,0,150,100 };
 	SHADER.m_spriteShader.DrawTex(m_pPngTex, 350, -50, &l_rec, &Def::Color);
+	if (m_text.size() == NULL)return;
+	for (size_t i = NULL; i < m_text.size(); ++i)
+	{
+		if (m_CharNum[i] == Key::Slash)
+		{
+			SHADER.m_spriteShader.SetMatrix(m_mat[i]);
+			SHADER.m_spriteShader.DrawTex(m_pMarkTex, (500 * i) - (m_text.size() / 2 * 500), 50, &m_rec[i], &Def::Color);
+		}
+		else
+		{
+			SHADER.m_spriteShader.SetMatrix(m_mat[i]);
+			SHADER.m_spriteShader.DrawTex(m_pTextTex, (500 * i) - (m_text.size() / 2 * 500), NULL, &m_rec[i], &Def::Color);
+		}
+	}
+}
+
+void C_Text::DrawS()
+{
+	Math::Rectangle l_rec = { 0,0,600,100 };
+	SHADER.m_spriteShader.SetMatrix(m_cuiMat);
+	SHADER.m_spriteShader.DrawTex(m_pSudTex, NULL, 75, &l_rec, &Def::Color);
+	l_rec = { 0,0,150,100 };
+	SHADER.m_spriteShader.DrawTex(m_pWavTex, 350, -50, &l_rec, &Def::Color);
 	if (m_text.size() == NULL)return;
 	for (size_t i = NULL; i < m_text.size(); ++i)
 	{
@@ -382,7 +405,13 @@ void C_Text::SetTex(KdTexture* a_pTextTex, KdTexture* a_pNumberTex, KdTexture* a
 	m_pMarkTex = a_pMarkTex;
 }
 
-void C_Text::SetCuiTex(KdTexture* a_pPngTex, KdTexture* a_pTexTex)
+void C_Text::SetCuiSTex(KdTexture* a_pWavTex, KdTexture* a_pSudTex)
+{
+	m_pSudTex = a_pSudTex;
+	m_pWavTex = a_pWavTex;
+}
+
+void C_Text::SetCuiTTex(KdTexture* a_pPngTex, KdTexture* a_pTexTex)
 {
 	m_pTexTex = a_pTexTex;
 	m_pPngTex = a_pPngTex;

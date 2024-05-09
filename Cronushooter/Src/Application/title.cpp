@@ -26,7 +26,7 @@ void C_Title::Init()
 	m_rec[OPTION]   = { 0, 0, 500, 500 };
 	m_scale[TITLE]  = { 1, 1 };
 	m_scale[START]  = { 0.5f, 0.5f };
-	m_scale[OPTION] = { 0.25f, 0.25f };
+	m_scale[OPTION] = { 0.3f, 0.3f };
 }
 
 void C_Title::Draw()

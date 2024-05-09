@@ -9,6 +9,7 @@
 #include "animation.h"
 #include "text.h"
 #include "option.h"
+#include "backGroundMusic.hpp"
 
 void Scene::Draw2D()
 {
@@ -18,6 +19,7 @@ void Scene::Draw2D()
 		m_back->DrawTitle();
 		m_player.Draw();
 		m_back->DrawFilter();
+		if (m_bAllCre && m_gal!=0) DrawStar();
 		m_title->Draw();
 		break;
 	case Screen::Scene::GAME:
@@ -25,19 +27,19 @@ void Scene::Draw2D()
 		if (!m_explFlg) m_ui->DrawExplanation();
 		else
 		{
-			if (m_directorCount > 30)
+			if (m_directorCount > 10)
 			{
 				m_cloud->Draw();
 			}
-			if (m_directorCount > 60)
+			if (m_directorCount > 10)
 			{
 				for (decltype(auto) l_bullet : m_bulletList) l_bullet->DrawEne();
 				for (decltype(auto) l_eneLis : m_enemyList) l_eneLis->Draw();
 				for (decltype(auto) l_eneLis : m_lineEnemyList) l_eneLis->DrawLineEnemy();
 				for (decltype(auto) l_anima : m_anima) { l_anima->DrawBra(); l_anima->DrawHit(); }
 				m_player.Draw();
-				if (m_player.Timer() > 19) m_cloud->Draw();
-				if (breakNum > 19)m_cloud->Draw();
+				if (m_player.Timer() > 39) m_cloud->Draw();
+				if (breakNum > 39)m_cloud->Draw();
 				m_ui->DrawTimer();
 				m_ui->DrawBreakNum();
 			}
@@ -50,14 +52,17 @@ void Scene::Draw2D()
 	case Screen::Scene::PAUSE:
 		m_back->DrawGame();
 		m_back->DrawFilter();
-		DrawOption();
-		m_txt->Draw();
+		DrawEsc();
+		//DrawPage();
+		if(m_option->GetPg()==0)m_txt->DrawT();
+		if(m_option->GetPg()==1)m_txt->DrawS();
 		m_option->Draw();
 		break;
 	case Screen::Scene::RESULT:
 		m_back->DrawGame();
 		m_cloud->Draw();
 		m_back->DrawFilter();
+		DrawEsc();
 		m_number[0]->DrawNumber(true);
 		m_number[1]->DrawNumber();
 		break;
@@ -67,17 +72,39 @@ void Scene::Draw2D()
 	SHADER.m_spriteShader.DrawTex(&m_tex,Math::Rectangle(0,0,16,16),1.f);
 }
 
-void Scene::DrawOption()
+void Scene::DrawEsc()
 {
+	++m_y;
+	if (m_y > 360)m_y -= 360;
+	auto x = -Screen::HalfWidth - m_mouse.x;
+	auto y = Screen::HalfHeight - m_mouse.y;
+	auto dist = sqrt(x * x + y * y);
+	if (dist < 70)
+		if (Key::IsPushing(Key::L_Click)) m_nextScene = Screen::Scene::INITIAL;
 	SHADER.m_spriteShader.SetMatrix(Def::Mat);
-	SHADER.m_spriteShader.DrawTex(&m_escTex, -Screen::HalfWidth + 55, Screen::HalfHeight - 50, &m_escRec, &Def::Color);
-	//SHADER.m_spriteShader.DrawTex(&m_arrowTex, , -Screen::HalfHeight+40 , &m_escRec, &Def::Color);
+	SHADER.m_spriteShader.DrawTex(&m_escTex, -Screen::HalfWidth + 55, Screen::HalfHeight - 40 + (sin(ToRadians(m_y)) * 10), &m_escRec, &Def::Color);
+}
 
+void Scene::DrawPage()
+{
+	++m_Ay;
+	if (m_Ay > 360)m_Ay -= 360;
+	--m_Dy;
+	if (m_Dy < 0)m_Dy += 360;
+	SHADER.m_spriteShader.SetMatrix(Def::Mat);
+	SHADER.m_spriteShader.DrawTex(&m_adTex, Screen::HalfWidth - 150 , Screen::HalfHeight - 80 + (sin(ToRadians(m_Ay)) * 10), &m_a, &Def::Color);
+	SHADER.m_spriteShader.DrawTex(&m_adTex, Screen::HalfWidth - 100 , Screen::HalfHeight - 80 + (sin(ToRadians(m_Dy)) * 10), &m_d, &Def::Color);
 }
 
 void Scene::Update()
 {
 	this->CalcMousePos();
+	if (m_lag == 0)
+	{
+		if (rand() % 2 > 0)BGM.Play("bgm");
+		else BGM.Play("bgm1");
+	}
+	m_lag = 1;
 	switch (m_nowScene)
 	{
 	case Screen::Scene::INITIAL:
@@ -87,6 +114,7 @@ void Scene::Update()
 			m_back->UpdateTitle();
 			m_player.UpdatePlayerTitle(m_mouse);
 			m_nextScene = m_title->Update(m_mouse);
+			if (m_bAllCre) UpdateStar(); m_gal = 1;
 		}
 		break;
 	case Screen::Scene::GAME:
@@ -103,7 +131,7 @@ void Scene::Update()
 				m_player.MatrixSet();
 				//EnemyPop();
 			}
-			if (m_directorCount > 120 && !m_bUpdateFlg)
+			if (m_directorCount > 20 && !m_bUpdateFlg)
 			{
 				m_player.StartTimer();
 				m_bUpdateFlg = true;
@@ -122,7 +150,7 @@ void Scene::Update()
 				for (decltype(auto) l_anima : m_anima) { l_anima->UpdateBra(); l_anima->UpdateHit(); }
 				m_player.CheckHitBullet();
 				m_player.CheckHitEnemy();
-				if (m_ui->GetHp() <= NULL) m_nextScene = Screen::Scene::RESULT;
+				if (m_ui->GetHp() <= NULL || m_player.Timer() < NULL) m_nextScene = Screen::Scene::RESULT;
 			}
 		}
 		break;
@@ -130,7 +158,45 @@ void Scene::Update()
 		m_back->UpdateGame();
 		m_txt->Update();
 		m_option->Update(m_mouse,m_txt->GetPass());
-		if (!m_option->GetCanLoad()) m_player.SetTexture(m_option->GetTempTex(),&m_hitTex);
+		if (m_option->GetPg() == NULL)
+		{
+			if (m_option->GetCanLoad())
+			{
+				switch (m_option->GetTexPattern())
+				{
+				case 1:
+					m_player.SetTexture(m_option->GetTempTex(), &m_hitTex);
+					break;
+				case 2:
+					m_enemyTex.Load(m_option->GetPass());
+					break;
+				case 3:
+					m_lineEnemyTex.Load(m_option->GetPass());
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		else
+		{
+			if (m_option->GetSeCanLoad())
+			{
+				switch (m_option->GetSePattern())
+				{
+				case 1:
+					BGM.SetBGM({ m_option->GetTempSe() }, "Original" + std::to_string(m_i++));
+					BGM.SetVol(m_vol);
+					break;
+				case 2:
+					m_breInsSe = m_option->GetTempSe()->CreateInstance(false);
+					m_breInsSe->SetVolume(m_vol);
+					break;
+				default:
+					break;
+				}
+			}
+		}
 		break;
 	case Screen::Scene::RESULT:
 		m_back->UpdateGame();
@@ -151,11 +217,13 @@ void Scene::Update()
 		if (m_cutCount == NULL)
 		{
 			m_time = m_player.Timer();
+			if (m_time < NULL)m_bAllCre = true;
 			m_score += m_time + breakNum;
 			m_cut->InitCut();
+			if (m_nextScene == Screen::Scene::INITIAL) m_lag = NULL;
 		}
 		m_bCut = true;
-		m_directorCount = NULL;
+		//m_directorCount = NULL;
 	}
 	if (m_bCut)
 	{
@@ -163,24 +231,41 @@ void Scene::Update()
 		if (m_cutCount > SceneSwitchCount) m_nowScene = m_nextScene;
 		if (m_cutCount > SceneCutEndCount)
 		{
+			DeleteEnemy();
 			if (m_nowScene == Screen::Scene::GAME)
 			{
 				breakNum = NULL;
 				m_ui->Init();
 				m_player.Init();
 			}
-			else  DeleteEnemy();
 			m_cut->SetPopFlg(m_bCut);
 			m_bCut = m_cut->GetAlpFlg();
 		}
 		m_cutCount++;
-		if (m_cutCount > 80)m_bCut = false;
+		if (m_cutCount > 80) m_bCut = false;
 	}
 	else m_cutCount = NULL;
 
 	if (Key::IsPushing(Key::Q) && Key::IsPushing(Key::L_Shift)) debag = true;
 	if (Key::IsPushing(Key::Q) && Key::IsPushing(Key::L_Ctrl)) debag = false;
 
+	if (Key::IsPushing(Key::E) && Key::IsPushing(Key::L_Shift)) m_bAllCre = true;
+	if (Key::IsPushing(Key::E) && Key::IsPushing(Key::L_Ctrl)) m_bAllCre = false;
+
+	if (Key::IsPushing(Key::Right))
+	{
+		m_vol -= 0.01f;
+		if (m_vol < 0)m_vol = 0;
+		m_breInsSe->SetVolume(m_vol);
+		BGM.SetVol(m_vol);
+	}
+	if (Key::IsPushing(Key::Left))
+	{
+		m_vol += 0.01f;
+		if (m_vol > 1)m_vol = 1;
+		m_breInsSe->SetVolume(m_vol);
+		BGM.SetVol(m_vol);
+	}
 	m_mat = Math::Matrix::CreateTranslation( m_mouse.x,m_mouse.y , Def::Vec.z);
 }
 
@@ -275,6 +360,7 @@ void Scene::UpdateGame()
 	{
 		m_lineEnePopLim = 5;
 		m_bulletEnePop = 150;
+		if (breakNum) m_enePop = 15;
 	}
 }
 
@@ -336,12 +422,43 @@ void Scene::Init()
 
 	srand(timeGetTime());
 
+	m_lag = NULL;
+	m_gal = NULL;
+	m_i = NULL;
+
+	m_bAllCre = false;
+
+	m_Ay = NULL;
+	m_Dy = NULL;
+
 	m_breSe = std::make_shared<KdSoundEffect>();
+	m_hitSe = std::make_shared<KdSoundEffect>();
+	m_bgm = std::make_shared<KdSoundEffect>();
+	m_bgm1 = std::make_shared<KdSoundEffect>();
+
+	m_bgm->Load("Sound/bgm.wav");
+	m_bgm1->Load("Sound/diss.wav");
+	BGM.SetBGM({ m_bgm }, "bgm");
+	BGM.SetBGM({ m_bgm1 }, "bgm1");
+	BGM.Init(true);
+
+	m_option = std::make_shared<C_Option>();
+	m_loadTex.Load("texture/load.png");
+	m_tagTex.Load("texture/tag.png");
+	m_checkTex.Load("texture/check.png");
+	m_seTex.Load("texture/tYmk6RhnhkRBJk21715275727_1715275730.png");
+	m_option->Init();
+	m_option->SetTex(&m_loadTex, &m_tagTex, &m_checkTex);
+	m_option->SetSeTex(&m_loadTex, &m_seTex, &m_checkTex);
 
 	m_breSe->Load("Sound/damage.wav");
+	m_hitSe->Load("Sound/break.wav");
 	m_breInsSe = m_breSe->CreateInstance(false);
-	m_vol = 0.5f;
+	m_hitInsSe = m_hitSe->CreateInstance(false);
+	m_vol = 0.05f;
 	m_breInsSe->SetVolume(m_vol);
+	m_hitInsSe->SetVolume(m_vol);
+	BGM.SetVol(m_vol);
 
 	m_enePop = 10;
 	m_lineEnePop = 5;
@@ -396,7 +513,7 @@ void Scene::Init()
 	m_lClickTex.Load("texture/ClickUi.png");
 	m_timerTex.Load("texture/numbers.png");
 	m_hpTex.Load("texture/backTexture/hp.png");
-	m_textTex.Load("texture/textResult.png");
+	m_textTex.Load("texture/textResult1.png");
 	m_breNumTex.Load("texture/number.png");
 	m_ui->SetTex(&m_explTex, &m_lClickTex,&m_timerTex,&m_hpTex,&m_breNumTex);
 	m_ui->Init();
@@ -422,14 +539,20 @@ void Scene::Init()
 	m_markTex.Load("texture/VOJghqsEY0pb35e1715187123_1715187124.png");
 	m_pngTex.Load("texture/4lI7xuTOnubV7Hx1715191277_1715191279.png");
 	m_texTex.Load("texture/DuxwAPe1KHeM5eZ1715191194_1715191195.png");
+	m_wavTex.Load("texture/JfLhfXVnwtiOtXf1715280371_1715280373.png");
+	m_sudTex.Load("texture/R9C2mqP2zpyAWkS1715280385_1715280386.png");
 	m_txt->Init();
 	m_txt->SetTex(&m_txtTex,&m_timerTex,&m_markTex);
-	m_txt->SetCuiTex(&m_pngTex,&m_texTex);
+	m_txt->SetCuiTTex(&m_pngTex,&m_texTex);
+	m_txt->SetCuiSTex(&m_wavTex,&m_sudTex);
 
-	m_option = std::make_shared<C_Option>();
-	m_loadTex.Load("texture/load.png");
-	m_option->SetTex(&m_loadTex);
-	m_option->Init();
+	m_adTex.Load("texture/ad.png");
+	m_a = { 0,0,50,50 };
+	m_d = { 50,0,50,50 };
+
+
+	m_starTex.Load("texture/star.png");
+	m_starPos = Math::Vector2(NULL,Screen::HalfHeight+64);
 }
 
 void Scene::Release()
@@ -447,6 +570,13 @@ void Scene::Release()
 	m_eneBulletTex.Release();
 	m_breNumTex.Release();
 	m_textTex.Release();
+	m_tagTex.Release();
+	m_checkTex.Release();
+	m_adTex.Release();
+	m_seTex.Release();
+	m_wavTex.Release();
+	m_sudTex.Release();
+	m_starTex.Release();
 }
 
 void Scene::ImGuiUpdate()
@@ -502,4 +632,27 @@ void Scene::Hit()
 {
 	if (debag && 1 >= m_ui->GetHp())return;
 	m_ui->DownHp();
+}
+
+void Scene::DrawStar()
+{
+	SHADER.m_spriteShader.SetMatrix(m_starMat);
+	SHADER.m_spriteShader.DrawTex(&m_starTex, Math::Rectangle(Def::Vec.x, Def::Vec.y, 64, 64), 1.f);
+}
+
+void Scene::UpdateStar()
+{
+	m_starPos.y -= 15.f;
+	if (m_starPos.x <= -Screen::HalfWidth + 64)m_starPos.x = -Screen::HalfWidth + 64;
+	if (m_starPos.x >= Screen::HalfWidth - 64)m_starPos.x = Screen::HalfWidth - 64;
+	if (m_starPos.y <= -Screen::HalfHeight - 64)
+	{
+		m_starPos.x = rand() % 1217 - 608;
+		m_starPos.y = Screen::HalfHeight + 64;
+	}
+	m_star++;
+	if (m_star > 360)m_star -= 360;
+	auto transMat = Math::Matrix::CreateTranslation(m_starPos.x, m_starPos.y, NULL);
+	auto rollMat = Math::Matrix::CreateRotationZ(ToRadians(m_star));
+	 m_starMat = rollMat * transMat;
 }
