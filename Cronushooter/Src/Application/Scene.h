@@ -120,6 +120,7 @@ private:
 
 	int m_lag;
 	int m_gal;
+	int m_lg;
 	int m_i;
 
 	bool m_bAllCre;

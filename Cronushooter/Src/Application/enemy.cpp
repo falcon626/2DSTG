@@ -94,7 +94,7 @@ void C_Enemy::DrawLineEnemy()
 {
 	if (!m_eAlive[Line]&&m_lag!=1)return;
 	SHADER.m_spriteShader.SetMatrix(m_mat[Line]);
-	SHADER.m_spriteShader.DrawTex(m_pTex[Normal], Math::Rectangle(TEX_RADIUS, Def::Vec.y, TEX_LINESIZE, TEX_LINESIZE), Def::Color.A());
+	SHADER.m_spriteShader.DrawTex(m_pTex[Normal], Math::Rectangle(TEX_LINERAD, Def::Vec.y, TEX_LINESIZE, TEX_LINESIZE), Def::Color.A());
 }
 
 void C_Enemy::UpdateLineEnemy(Math::Vector2 a_vec)

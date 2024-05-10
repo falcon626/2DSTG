@@ -53,7 +53,7 @@ void Scene::Draw2D()
 		m_back->DrawGame();
 		m_back->DrawFilter();
 		DrawEsc();
-		//DrawPage();
+		DrawPage();
 		if(m_option->GetPg()==0)m_txt->DrawT();
 		if(m_option->GetPg()==1)m_txt->DrawS();
 		m_option->Draw();
@@ -101,8 +101,8 @@ void Scene::Update()
 	this->CalcMousePos();
 	if (m_lag == 0)
 	{
-		if (rand() % 2 > 0)BGM.Play("bgm");
-		else BGM.Play("bgm1");
+		if (rand() % 1 > 0)BGM.Play("bgm1");
+		else BGM.Play("bgm");
 	}
 	m_lag = 1;
 	switch (m_nowScene)
@@ -150,7 +150,9 @@ void Scene::Update()
 				for (decltype(auto) l_anima : m_anima) { l_anima->UpdateBra(); l_anima->UpdateHit(); }
 				m_player.CheckHitBullet();
 				m_player.CheckHitEnemy();
-				if (m_ui->GetHp() <= NULL || m_player.Timer() < NULL) m_nextScene = Screen::Scene::RESULT;
+				if(Key::IsPushing(Key::R))m_nextScene = Screen::Scene::RESULT;
+				//if ((m_ui->GetHp() <= NULL || m_player.Timer() < NULL) && m_lg==1) m_nextScene = Screen::Scene::RESULT;
+				m_lg = 1;
 			}
 		}
 		break;
@@ -165,7 +167,7 @@ void Scene::Update()
 				switch (m_option->GetTexPattern())
 				{
 				case 1:
-					m_player.SetTexture(m_option->GetTempTex(), &m_hitTex);
+					m_player.SetTexture(m_option->GetTempTex(), &m_playerHitTex);
 					break;
 				case 2:
 					m_enemyTex.Load(m_option->GetPass());
@@ -235,6 +237,7 @@ void Scene::Update()
 			if (m_nowScene == Screen::Scene::GAME)
 			{
 				breakNum = NULL;
+				m_lg = NULL;
 				m_ui->Init();
 				m_player.Init();
 			}
@@ -424,6 +427,7 @@ void Scene::Init()
 
 	m_lag = NULL;
 	m_gal = NULL;
+	m_lg = NULL;
 	m_i = NULL;
 
 	m_bAllCre = false;
@@ -455,8 +459,8 @@ void Scene::Init()
 	m_hitSe->Load("Sound/break.wav");
 	m_breInsSe = m_breSe->CreateInstance(false);
 	m_hitInsSe = m_hitSe->CreateInstance(false);
-	m_vol = 0.05f;
-	m_breInsSe->SetVolume(m_vol);
+	m_vol = 0.02f;
+	m_breInsSe->SetVolume(m_vol + 0.01f);
 	m_hitInsSe->SetVolume(m_vol);
 	BGM.SetVol(m_vol);
 
